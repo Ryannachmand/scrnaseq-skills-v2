@@ -86,7 +86,19 @@ Every plot function accepts an `output_dir` argument and writes via:
 ggsave(file.path(output_dir, filename), device = "pdf", useDingbats = FALSE, units = "in")
 ```
 
-Never use `pdf()` / `dev.off()` in generated scripts.
+Use `ggsave()` for all ggplot outputs. The exception list below covers libraries with
+no ggsave path. Any other use of `pdf()` / `dev.off()` in a generated script is a violation.
+
+**Documented exceptions (closed list):**
+
+| # | Library / pattern | Reason | How to use |
+|---|---|---|---|
+| 1 | `ComplexHeatmap::draw()` | `draw()` sends output to the active graphics device; `ggsave()` cannot intercept it | `pdf(path); draw(ht); dev.off()` |
+| 2 | `pheatmap` with `grid.text()` title overlay | `grid.text()` draws into the active device mid-render; the overlay cannot be captured by `ggsave()` | `pdf(path); grid.draw(ph$gtable); grid.text(...); dev.off()` |
+| 3 | `circlize::chordDiagram()` | circlize uses base R graphics with no ggplot/ggsave path | `pdf(path); chordDiagramFromMatrix(...); dev.off()` |
+
+To add a new exception: update this table in CONVENTIONS.md first, then use the pattern in
+the module. Agents must not use `pdf()` / `dev.off()` for any other purpose.
 
 ---
 
@@ -206,5 +218,5 @@ Before finalizing any module or primitive, verify:
 - No project-specific color vectors hardcoded (plots accept color arguments)
 - No project-specific gene sets hardcoded (gene sets are caller-provided)
 - Every plot function uses `ggsave(..., device='pdf', useDingbats=FALSE)`
-- No `pdf()` / `dev.off()` patterns
+- No `pdf()` / `dev.off()` patterns — unless the use falls under the three documented exceptions in §4
 - Function names follow the `make_`, `run_`, `is_`, `get_`, `add_` conventions
