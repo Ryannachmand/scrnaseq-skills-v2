@@ -6,7 +6,6 @@
 #   - NO hardcoded gene sets (OXPHOS/FA_Synthesis/PPARG etc. belong in examples/)
 #   - Invalid R range syntax ("NDUFA1"-"NDUFA10") NOT carried forward — it was never valid R
 #   - Gene sets are caller-provided via the gene_sets argument
-# Last validated: HumanFat MetabolicProfile run (source), 2026-03-05
 ---
 
 # AUCell Scoring — Reusable Helpers

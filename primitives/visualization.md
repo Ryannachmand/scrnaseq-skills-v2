@@ -5,8 +5,6 @@
 #   - Proportion plot: patient_id / cell_fraction / source_file → function arguments
 #   - ec_colors / tissue_colors / adipose_type_colors → group_colors / subtype_colors args
 #   - 'EC Functional Dot Plot' → make_canonical_dotplot() with no EC-specific assumptions
-#   - EC/HumanFat-specific size comments removed from stacked violin
-# Last validated: HumanFat_Yang run (source), 2026-03-05
 ---
 
 # Visualization — Parameterized R Plot Recipes

@@ -3,7 +3,6 @@
 # Migrated from ~/claude-skills/shared/r_environment.md with F1 bug fix applied.
 # F1 FIX: Added --no-capture-output flag. Without this flag, conda run hangs
 #         after the R script completes. This was missing in v1.
-# Last validated: HumanFat_Yang run, 2026-03-05
 ---
 
 # R Environment Rules

@@ -3,7 +3,6 @@
 # Migrated from ~/claude-skills/shared/aesthetics.md
 # These are visual rules and philosophy — not plot-specific code.
 # Plot-specific R code lives in primitives/visualization.md.
-# Last validated: HumanFat_Yang run, 2026-03-05
 ---
 
 # Shared Aesthetics Principles

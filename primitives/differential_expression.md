@@ -7,7 +7,6 @@
 #         HLA class II, histones, and unannotated identifiers. Phantom in v1 (called but never defined).
 # F4 FIX: functional_gene_sets removed from this primitive. It is a placeholder only.
 #         EC-specific gene sets from v1 belong in examples/ (Phase 4).
-# Last validated: HumanFat run (source), 2026-03-11 (~38,946 EC cells)
 ---
 
 # Differential Expression — Core Functions
