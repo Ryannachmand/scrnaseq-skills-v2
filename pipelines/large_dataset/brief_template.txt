@@ -1,0 +1,164 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# Large Dataset Pipeline — Analysis Brief Template
+# Version: v2
+# Reference: pipelines/large_dataset/pipeline.md
+#
+# Instructions: Replace all "project_specific" values with actual values.
+# Commented-out blocks are optional — uncomment to activate.
+# "project_specific" is the sentinel: any generated script that still contains
+# this literal string will fail, flagging an unresolved field.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── IDENTITY (required) ──────────────────────────────────────────────────────
+
+project_name: "MyProject"
+organism: "human"            # human | mouse
+tissue: "project_specific"   # anatomical origin; used in plot titles
+output_dir: "output/"
+
+# ── INPUTS (required) ────────────────────────────────────────────────────────
+
+inputs:
+  type: "h5"                 # h5 | rds | mex
+  paths:
+    - "project_specific"     # list of file paths to .h5, .rds, or MEX directories
+  metadata_csv: null         # optional CSV with per-sample metadata keyed on sample_id;
+                             # if null, sample IDs are inferred from file path components
+
+# ── PIPELINE (required) ──────────────────────────────────────────────────────
+
+pipeline: "large_dataset"
+
+# ── PIPELINE PARAMETERS — Stage 3 (whole object processing) ──────────────────
+# These govern whole-object processing. Lab defaults are shown.
+# Override per project as needed.
+
+pipeline_params:
+  n_variable_features: 4000
+  n_pcs: 30
+  clustering_resolution: 0.8
+  batch_correction_var: "sample_id"    # lab default — override only if project uses a different column
+  qc_thresholds:
+    n_feature_min_percentile: 2        # Stage 2: propose nFeature_RNA_min at this percentile
+    n_feature_max_percentile: 98       # Stage 2: propose nFeature_RNA_max at this percentile
+    percent_mt_max: 20                 # Stage 2: fixed percent.mt ceiling
+
+# ── ANNOTATION — Stage 4 ─────────────────────────────────────────────────────
+
+annotation:
+  top_n_markers: 25           # markers per cluster written to markers.yaml at CP3
+
+# ── SUBSET ANALYSIS — Stages 6-7 (optional) ──────────────────────────────────
+# If target_celltypes is null, Stages 6 and 7 are skipped entirely.
+# pipeline_params within subset uses lab defaults for re-processing;
+# override only if the subset requires different parameters.
+
+subset:
+  target_celltypes: null      # one or more cell type names from CP3 label mapping
+  subset_name: "subset"       # used in output filenames and plot titles
+  pipeline_params:            # optional override for subset re-processing
+    n_variable_features: 2850
+    n_pcs: 40
+    clustering_resolution: 0.39
+
+# ── DOWNSTREAM ANALYSES — Stage 8 (optional) ─────────────────────────────────
+# Each key is a brief key that maps to a module file (see pipeline.md Stage 8 table).
+# The deployment agent validates the module exists and all required keys are present.
+# Execution order: multi_group_de → bulk_concordance (if annotation_overlay) → all others.
+
+downstream_analyses: {}
+
+# To activate a module, uncomment its block and fill in required values.
+
+# --- N-group DE dot plots + GO functional analysis ---
+# multi_group_de:
+#   group_col: "project_specific"         # metadata column holding comparison groups
+#   label_col: "project_specific"         # metadata column holding cell type labels
+#   groups: ["project_specific"]          # ordered character vector; must match group_col values
+#   comparisons:
+#     - label: "GroupA_vs_GroupB"         # filename-safe ASCII label (no Unicode, no em-dash)
+#       ident1: "project_specific"        # group value for positive log2FC
+#       ident2: "project_specific"        # group value for negative log2FC
+#   functional_gene_sets: null            # optional: named list of gene vectors (biology-specific)
+#                                         # if null: functional dotplot and heatmap steps skipped
+#   label_order: null                     # optional: ordered cell type vector for x-axis
+#   label_colors: null                    # optional: named color vector for x-axis labels
+#   n_each: 12
+#   padj_cut: 0.05
+#   lfc_cut: 0.5
+
+# --- Gene expression overlay on UMAP ---
+# feature_umap_plot:
+#   genes: ["project_specific"]           # gene symbols to plot; one panel per gene
+#   output_dir: "output/feature_umap"     # defaults to output/feature_umap if omitted
+
+# --- Subtype subclustering (two-phase: exploration then endpoint) ---
+# subclustering:
+#   target_celltypes: ["project_specific"]  # cell type values to subset from label_col
+#   resolution: 0.39                        # clustering resolution for subtype clusters
+#   n_pcs: 40
+#   keep_clusters: null                     # Phase 2: list of cluster IDs to retain
+#   exclude_groups: null                    # optional: group values to exclude before clustering
+
+# --- AUCell metabolic pathway scoring ---
+# metabolic_profile:
+#   label_col: "project_specific"         # broad cell type label column (whole-object faceting)
+#   group_col: "project_specific"         # tissue/condition column for group-level plots
+#   gene_sets: {}                         # REQUIRED: named list of gene vectors (biology-specific)
+#   subtype_col: null                     # optional: finer subtype column
+#   subsample_ceiling: 2500              # max cells per group for AUCell to avoid OOM
+
+# --- Monocle3 pseudotime trajectory ---
+# trajectory:
+#   label_col: "project_specific"         # cell subtype label column
+#   start_cluster: "project_specific"     # exact subtype label for trajectory root
+#   end_cluster: "project_specific"       # informational; Monocle3 infers endpoints
+#   exclude_pattern: null                 # optional regex; e.g. "^AEC" excludes AEC1, AEC2
+#   group_col: null                       # optional; enables group-stratified violin plots
+#   supplementary_plots: true
+
+# --- pySCENIC TF regulon analysis (GRN → cisTarget → AUCell) ---
+# pyscenic:
+#   label_col: "project_specific"
+#   scenic_python_path: "project_specific"  # full path to Python binary in scenicenv
+#   database_dir: "project_specific"        # directory with hg38/mm10 feather ranking databases
+#   tf_list: "project_specific"             # path to allTFs_hg38.txt or equivalent
+#   n_workers: 4
+#   min_pct_cells: 0.05
+#   min_mean_expr: 0.1
+
+# --- Bulk RNA-seq concordance (two modes: signature score or parallel LFC) ---
+# bulk_concordance:
+#   mode: "signature_score"               # signature_score | parallel_lfc
+#   bulk_csv: "project_specific"          # path to bulk DE results CSV
+#   experiment_label: "project_specific"  # ASCII label for plot titles (no Unicode)
+#   subtype_col: "project_specific"       # in-house subtype column
+#   group_col: "project_specific"         # grouping column (tissue, condition)
+#   exclude_subtypes: []                  # optional: subtypes to exclude from analysis
+#   target_tf: null                       # optional: TF gene list for Part 3 (Mode 1 only)
+#   biology_gene_sets: null               # optional: named list for Mode 1 Part 3 bar plot
+
+# --- Kruskal-Wallis comprehensive DE CSV (N-group non-parametric) ---
+# de_comprehensive_csv:
+#   group_col: "project_specific"         # REQUIRED: metadata column holding group labels
+#   label_col: null                       # optional: subtype column for top_subtype annotation
+#   group_order: null                     # optional: ordered character vector of group values
+#   subtype_labels: null                  # optional: named vector for subtype relabeling
+
+# --- CellChat v2 ligand-receptor interaction analysis ---
+# cellchat:
+#   label_col: "project_specific"         # cell type label column in Seurat metadata
+#   group_col: null                       # condition/tissue column; null = skip Script 6 comparison
+
+# ── CONTEXT OVERRIDES (project-specific; optional) ───────────────────────────
+# Palettes and column name overrides for lab defaults from context/color_palettes.md
+# and context/lab_context.md. Leave null to use lab defaults.
+
+context_overrides:
+  palettes:
+    group_colors: null          # named vector: group_name → hex color
+    subtype_colors: null        # named vector: subtype_name → hex color
+  metadata_columns:
+    group_col: null             # column for comparison groups (DE, proportion plots)
+    subtype_col: null           # finer-grained label column for subset analysis
+    sample_col: "sample_id"     # sample identifier column (lab default: sample_id)
