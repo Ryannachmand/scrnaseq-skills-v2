@@ -1,0 +1,28 @@
+# Editor / OS detritus
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Secrets — should never be in this repo, but defense in depth
+.env
+.env.local
+*.pem
+*.key
+PAT.txt
+api_keys.txt
+
+# Local agent run logs
+*.log
+v2_phase*.log
+inventory_agent.log
+
+# Python/R venv (in case you ever test code locally)
+__pycache__/
+*.pyc
+.Rhistory
+.RData
+.Rproj.user/
+
+# OS thumbnails
+Thumbs.db
