@@ -85,7 +85,12 @@ known_atlases:
                                        # validated: TabulaSapiensComparison project
                                        # produces ≥75% atlas cells in UMAP (80-85% observed)
                                        # with ~38k in-house cells across 6 subtypes
-    validated_date: "2026-04-15"
+    validated_date: "2026-04-15"       # inferred from Phase 2C staging notes
+                                       # ("Validated run: TabulaSapiensComparison, 2026-04-15")
+                                       # validated_examples.yaml TabulaSapiensComparison entry
+                                       # has last_validated: null (TODO). If the actual run
+                                       # used a different date, update both here and in the
+                                       # registry. Phase 4 agent found no contradicting evidence.
     notes: |
       Download format: h5ad (anndata); convert to Seurat with SeuratDisk or zellkonverter.
       Cell type column: cell_ontology_class (Cell Ontology terms, not free text).

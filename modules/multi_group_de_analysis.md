@@ -16,8 +16,8 @@ requires_context:
       - downstream_analyses.multi_group_de.group_col
       - downstream_analyses.multi_group_de.label_col
       - downstream_analyses.multi_group_de.comparisons
-      - downstream_analyses.multi_group_de.functional_gene_sets
     optional:
+      - downstream_analyses.multi_group_de.functional_gene_sets  # null = skip functional plots
       - downstream_analyses.multi_group_de.label_order
       - downstream_analyses.multi_group_de.label_colors
       - downstream_analyses.multi_group_de.n_each
@@ -91,8 +91,9 @@ downstream_analyses:
       - label: "GroupA_vs_GroupB"         # filename-safe ASCII label — no Unicode, no em-dash
         ident1: project_specific          # group value for positive log2FC (shown right/top)
         ident2: project_specific          # group value for negative log2FC (shown left/bottom)
-    functional_gene_sets: project_specific  # REQUIRED: named list of gene vectors, biology-specific
-                                            # if null: make_functional_dotplot and heatmap steps skipped
+    functional_gene_sets: null              # OPTIONAL: named list of gene vectors, biology-specific
+                                            # if null: make_functional_dotplot and make_functional_heatmap
+                                            # steps are skipped entirely; base DE + dotplot still runs
     n_each: 12                            # top N genes per direction in make_anatomical_dotplot
     padj_cut: 0.05
     lfc_cut: 0.5

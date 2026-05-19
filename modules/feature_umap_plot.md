@@ -14,7 +14,7 @@ requires_context:
     required:
       - output_dir
     optional:
-      - genes         # list of gene symbols to plot; can also be specified at runtime
+      - downstream_analyses.feature_umap_plot.genes    # list of gene symbols to plot
 references:
   - "@primitives/visualization.md"
   - "@primitives/aesthetics.md"
@@ -58,8 +58,11 @@ Each looked correct in isolation but produced visibly wrong output in comparison
 # ── Inputs ────────────────────────────────────────────────────────────────────
 RDS_PATH  <- "project_specific"   # REPLACE: path to annotated Seurat RDS
 
-# Genes to plot — from brief or specified directly
-GENES <- brief$genes %||% c("GENE1", "GENE2", "GENE3")  # REPLACE with actual gene symbols
+# Genes to plot — from brief downstream_analyses block or specified directly
+# Stage 8 dispatch: reads from downstream_analyses.feature_umap_plot.genes
+GENES <- brief$downstream_analyses$feature_umap_plot$genes %||%
+         brief$genes %||%    # fallback: top-level brief$genes (legacy compatibility)
+         c("GENE1", "GENE2", "GENE3")  # REPLACE with actual gene symbols
 
 # ── Behavioral options ────────────────────────────────────────────────────────
 ORDER_BY_EXPRESSION <- FALSE  # FALSE matches Seurat default (order = FALSE)
@@ -70,7 +73,12 @@ SUBSET_COL <- NULL   # e.g., "cell_type" — set NULL to plot all cells
 SUBSET_VAL <- NULL   # e.g., c("Endothelial") — set NULL to plot all cells
 
 # ── Output ────────────────────────────────────────────────────────────────────
-OUTPUT_DIR <- file.path(brief$output_dir %||% "output", "feature_umap")
+OUTPUT_DIR <- file.path(
+  brief$downstream_analyses$feature_umap_plot$output_dir %||%
+  brief$output_dir %||%    # fallback: top-level brief$output_dir (legacy compatibility)
+  "output",
+  "feature_umap"
+)
 dir.create(OUTPUT_DIR, recursive = TRUE, showWarnings = FALSE)
 ```
 
