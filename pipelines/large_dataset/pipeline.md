@@ -38,6 +38,19 @@ complete analysis.
 
 ---
 
+## Universal Rules — apply at every stage and in every continuation session
+
+- Before writing any plot code (UMAP, violin, dotplot, heatmap, volcano, bar,
+  chord, or any other visualization), re-read @primitives/aesthetics.md and
+  @primitives/visualization.md. Do this even in continuation sessions and even
+  when regenerating a plot already produced earlier in this job.
+- Before writing any R script, re-read @primitives/r_environment.md and
+  @primitives/seurat_v5_rules.md.
+- These re-reads are mandatory at every stage. Do not rely on recalled content
+  from earlier in the session or from a prior continuation session.
+
+---
+
 ## Stage 1 — Assemble
 
 **Depends on:** Nothing (pipeline start)

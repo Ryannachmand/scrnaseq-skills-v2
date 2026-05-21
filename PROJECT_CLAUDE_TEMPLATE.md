@@ -27,3 +27,8 @@
 #   subtype_colors: project_specific
 #   functional_gene_sets: project_specific
 #   label_order: project_specific
+
+## Universal Rule
+At every stage and in every continuation session, re-read all primitives referenced
+by the current stage before writing any code or plot. Do not rely on recalled content
+from earlier sessions.

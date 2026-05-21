@@ -45,6 +45,21 @@ public GEO downloads, or other formats — into a single harmonized Seurat objec
 loading through Harmony integration, optional cohort characterization plots, and
 Stage 8 post-integration downstream analyses. Expect 8 stages and up to 6 checkpoints.
 
+---
+
+## Universal Rules — apply at every stage and in every continuation session
+
+- Before writing any plot code (UMAP, violin, dotplot, heatmap, volcano, bar,
+  chord, or any other visualization), re-read @primitives/aesthetics.md and
+  @primitives/visualization.md. Do this even in continuation sessions and even
+  when regenerating a plot already produced earlier in this job.
+- Before writing any R script, re-read @primitives/r_environment.md and
+  @primitives/seurat_v5_rules.md.
+- These re-reads are mandatory at every stage. Do not rely on recalled content
+  from earlier in the session or from a prior continuation session.
+
+---
+
 ### Standard metadata columns produced by this pipeline
 
 After Stage 3, all cells in the merged object carry these columns:
