@@ -149,6 +149,11 @@ Reference that file rather than hardcoding color values inline.
 - **Do NOT filter to expressing cells only** (e.g. `gene > 0`) — this shifts the color minimum
   off zero and inflates apparent expression in low-expressing groups
 
+### Layer approach for expression split plots
+- No global grey background (`bg_df`) layer — each facet's own cells define UMAP shape
+- **Exception:** grey background IS appropriate for discrete/cell-type split plots
+  (helps show full UMAP context and cluster membership per group)
+
 ### Point sizes
 - UMAP point size: `pt.size = 0.3` (cell type / categorical)
 - For expression plots on large datasets: use `Seurat:::AutoPointSize()` pattern
@@ -162,3 +167,23 @@ Reference that file rather than hardcoding color values inline.
 - Dot plot dot size range: `c(0.3, 6)` for circles; `c(0.8, 5.5)` for diamonds
 - Dot plot stroke: `0.32` (circles) / `0.40` (diamonds), `color = "grey30"` / `"grey25"`
 - Significance indicator dots (e.g., pseudotime median): `size = 2.5, color = "#E53935"`
+
+---
+
+## Split / Faceted UMAP Plots
+
+### Text sizes
+| Element | Size |
+|---|---|
+| Strip (subplot) title | 22pt bold |
+| Axis titles (UMAP 1 / UMAP 2) | 18pt |
+| Legend text | 15pt |
+| Legend title | 16pt bold |
+
+### Sizing
+- Width: `4.5 * n_groups + 2` inches
+- Height: `5.5` inches (1 row of panels)
+- Use `nrow = 1` for group splits unless > 6 groups
+
+### Point size
+- 0.8 for both expression and cell-type split plots
