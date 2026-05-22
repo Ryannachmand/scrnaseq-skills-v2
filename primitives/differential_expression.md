@@ -527,8 +527,31 @@ make_functional_dotplot <- function(so_obj, markers, comp, subset_name,
     group_by(group_var, subtype_var, gene) %>%
     summarise(avg_exp = mean(expm1(expression)),
               pct_exp = mean(expression > 0) * 100, .groups = "drop") %>%
-    mutate(avg_exp_scaled = scale(avg_exp)[, 1],
-           gene = factor(gene, levels = rev(gene_order)))
+    mutate(avg_exp_scaled = scale(avg_exp)[, 1])
+
+  # Build wide expression matrix: rows = genes, cols = group:subtype combinations
+  clust_wide <- dot_df %>%
+    filter(gene %in% gene_order) %>%
+    mutate(col_id = paste(group_var, subtype_var, sep = ":")) %>%
+    select(gene, col_id, avg_exp_scaled) %>%
+    pivot_wider(names_from = col_id, values_from = avg_exp_scaled, values_fill = 0)
+  clust_mat_m <- as.matrix(clust_wide[, -1])
+  rownames(clust_mat_m) <- as.character(clust_wide$gene)
+
+  # Rebuild section_df with clustered gene order within each section
+  section_df <- bind_rows(lapply(names(functional_gene_sets), function(s) {
+    g <- as.character(functional_gene_sets[[s]])
+    g <- g[g %in% rownames(clust_mat_m)]
+    if (length(g) > 2) {
+      hc <- hclust(dist(clust_mat_m[g, , drop = FALSE], method = "euclidean"),
+                   method = "ward.D2")
+      g  <- g[hc$order]
+    }
+    data.frame(gene = g, section = s, stringsAsFactors = FALSE)
+  })) %>% distinct(gene, .keep_all = TRUE)
+
+  gene_order <- section_df$gene
+  dot_df <- dot_df %>% mutate(gene = factor(gene, levels = rev(gene_order)))
 
   # Section dividers and pinned labels
   section_rows <- lapply(names(functional_gene_sets), function(s) {
