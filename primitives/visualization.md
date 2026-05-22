@@ -235,7 +235,9 @@ ggsave(legend_file, plot = cowplot::plot_grid(leg), width = 2.5, height = 4,
 ```r
 make_tf_diamond_plot <- function(dot_df, gene_col = "gene", group_col = "group",
                                   pct_col = "pct_exp", lfc_col = "avg_log2FC",
-                                  output_file, n_genes = NULL, n_groups = NULL) {
+                                  output_file, n_genes = NULL, n_groups = NULL,
+                                  section_dividers = NULL,   # numeric vector of y-positions
+                                  section_labels   = NULL) { # data.frame(y, label, <group_col>)
   # Same structure as make_canonical_dotplot but:
   # - shape = 23 (diamond) with stroke = 0.4, color = "grey25"
   # - fill = diverging blue-white-red (TF fold change, not expression)
@@ -264,6 +266,20 @@ make_tf_diamond_plot <- function(dot_df, gene_col = "gene", group_col = "group",
       legend.position = "none"
     ) +
     coord_cartesian(clip = "off")
+
+  # Section dividers — solid lines (not dashed, per TF plot spec)
+  if (!is.null(section_dividers)) {
+    p <- p + geom_hline(yintercept = section_dividers, linetype = "solid",
+                        color = "grey50", linewidth = 0.4)
+  }
+
+  # Section labels — pinned to one group to avoid rendering in all facet panels
+  if (!is.null(section_labels)) {
+    p <- p + geom_text(data = section_labels,
+                       aes_string(x = as.name(group_col), y = "y", label = "label"),
+                       inherit.aes = FALSE, size = 4.5, hjust = 0,
+                       fontface = "bold.italic", color = "grey35")
+  }
 
   fig_h <- n_genes  * 0.29 + 2
   fig_w <- n_groups * 0.75 + 3.0
