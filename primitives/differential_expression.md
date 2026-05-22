@@ -638,56 +638,113 @@ make_functional_dotplot <- function(so_obj, markers, comp, subset_name,
 
 ```r
 make_pathway_barplot <- function(markers, comp, subset_name, universe_genes,
-                                  n_pathways = 15, output_file) {
-  # universe_genes: character vector of all genes tested (e.g. rownames of so after filtering)
-  sig_df <- markers %>%
-    filter(p_val_adj < PADJ_CUT, abs(avg_log2FC) > LFC_CUT, !is_confound(gene))
+                                 n_pathways = 15, output_file = NULL) {
 
-  run_ora <- function(genes, direction_label) {
+  sig_df    <- markers %>%
+    filter(p_val_adj < PADJ_CUT, abs(avg_log2FC) > LFC_CUT, !is_confound(gene))
+  genes_up1 <- sig_df %>% filter(avg_log2FC >  0) %>% pull(gene)
+  genes_up2 <- sig_df %>% filter(avg_log2FC <= 0) %>% pull(gene)
+
+  run_ora <- function(genes, dir_label) {
     if (length(genes) < 5) return(NULL)
-    res <- clusterProfiler::enrichGO(
+    ego <- enrichGO(
       gene          = genes,
-      universe      = universe_genes,
+      universe      = universe_genes,   # all genes expressed in the subset object
       OrgDb         = org.Hs.eg.db,
       keyType       = "SYMBOL",
       ont           = "BP",
       pAdjustMethod = "BH",
       pvalueCutoff  = 0.05,
-      qvalueCutoff  = 0.2
+      qvalueCutoff  = 0.2,
+      minGSSize     = 10,
+      maxGSSize     = 500,
+      readable      = TRUE
     )
-    if (is.null(res) || nrow(res@result) == 0) return(NULL)
-    res <- clusterProfiler::simplify(res, cutoff = 0.7)
-    data.frame(res@result) %>%
-      head(n_pathways) %>%
-      mutate(direction = direction_label,
-             neg_log10_p = -log10(p.adjust))
+    if (is.null(ego) || nrow(ego@result) == 0) return(NULL)
+    ego <- simplify(ego, cutoff = 0.6, by = "p.adjust", select_fun = min)
+    as.data.frame(ego) %>%
+      filter(p.adjust < 0.05) %>% arrange(p.adjust) %>%
+      slice_head(n = n_pathways) %>%
+      mutate(direction = dir_label)
   }
 
-  genes_up1 <- sig_df %>% filter(avg_log2FC >  0, !is_ambient(gene)) %>% pull(gene)
-  genes_up2 <- sig_df %>% filter(avg_log2FC <= 0, !is_ambient(gene)) %>% pull(gene)
+  res_all <- bind_rows(run_ora(genes_up1, comp$ident1),
+                       run_ora(genes_up2, comp$ident2))
+  if (nrow(res_all) == 0) return(NULL)
 
-  bar_df <- bind_rows(
-    run_ora(genes_up1, sprintf("Up: %s", comp$ident1)),
-    run_ora(genes_up2, sprintf("Up: %s", comp$ident2))
-  )
+  # Signed x: positive = ident2 (RIGHT), negative = ident1 (LEFT)
+  res_all <- res_all %>%
+    mutate(
+      neg_log_p  = -log10(p.adjust),
+      x_val      = ifelse(direction == comp$ident2, neg_log_p, -neg_log_p),
+      dot_x      = x_val * 1.03,
+      label_desc = ifelse(nchar(Description) > 55,
+                          paste0(substr(Description, 1, 52), "…"), Description),
+      top_genes  = sapply(strsplit(geneID, "/"), function(g) paste(head(g,5), collapse=", ")),
+      # Gene annotations: RIGHT bars go right of tip; LEFT bars go right of centre (x=0)
+      # This prevents overlap with pathway name labels on the left margin.
+      text_x     = ifelse(x_val >= 0,
+                          dot_x + max(abs(x_val)) * 0.03,
+                          max(abs(x_val)) * 0.03),
+      text_hjust = 0,
+      gene_text  = sprintf("n=%d  %s", Count, top_genes)
+    ) %>%
+    arrange(x_val) %>%
+    mutate(label_desc = factor(label_desc, levels = unique(label_desc)))
 
-  if (is.null(bar_df) || nrow(bar_df) == 0) {
-    message("No enriched pathways found."); return(NULL)
+  max_x <- max(abs(res_all$x_val))
+
+  p <- ggplot(res_all, aes(x = x_val, y = label_desc)) +
+    geom_col(aes(fill = direction), width = 0.55, alpha = 0.82) +
+    geom_vline(xintercept = 0, color = "grey25", linewidth = 0.55) +
+    geom_vline(xintercept = c(-log10(0.05), log10(0.05)),     # threshold lines
+               color = "grey55", linewidth = 0.35, linetype = "dashed") +
+    geom_point(
+      aes(x = dot_x, fill = direction, size = Count),
+      shape = 21, color = "grey20", stroke = 0.3, alpha = 0.95
+    ) +
+    geom_text(
+      aes(x = text_x, label = gene_text, hjust = text_hjust),
+      size = 3.5, fontface = "italic", color = "grey25", lineheight = 0.9
+    ) +
+    annotate("text", x = -max_x * 0.97, y = Inf,
+             label = sprintf("<- Up in %s", comp$ident1),
+             hjust = 0, vjust = 2, size = 3.8,
+             color = dir_colors[comp$ident1], fontface = "bold") +
+    annotate("text", x =  max_x * 0.97, y = Inf,
+             label = sprintf("Up in %s ->", comp$ident2),
+             hjust = 1, vjust = 2, size = 3.8,
+             color = dir_colors[comp$ident2], fontface = "bold") +
+    scale_fill_manual(values = dir_colors, name = "Enriched in") +
+    scale_size_continuous(name = "Gene count", range = c(2, 8)) +
+    scale_x_continuous(
+      name   = expression(-log[10](p[adj])),
+      labels = function(x) abs(round(x, 1)),
+      expand = expansion(mult = c(0.02, 0.45))   # extra right room for gene text
+    ) +
+    labs(title = sprintf("%s | %s\nGO Biological Process Enrichment",
+                         subset_name, gsub("_", " ", comp$label)),
+         y = NULL) +
+    theme_classic(base_size = 14) +
+    theme(
+      axis.text.y        = element_text(size = 13),
+      axis.text.x        = element_text(size = 13),
+      axis.title.x       = element_text(size = 14, face = "bold"),
+      axis.line.y        = element_blank(),
+      axis.ticks.y       = element_blank(),
+      panel.grid.major.x = element_line(color = "grey92", linewidth = 0.3),
+      legend.position    = "right",
+      plot.title         = element_text(hjust = 0.5, size = 15, face = "bold",
+                                        lineheight = 1.2),
+      plot.margin        = margin(t = 18, r = 10, b = 10, l = 10)
+    ) +
+    coord_cartesian(clip = "off")
+
+  if (!is.null(output_file)) {
+    n_bars <- nrow(res_all)
+    ggsave(output_file, plot = p, width = 15, height = max(4, n_bars * 0.28 + 2),
+           units = "in", device = "pdf", useDingbats = FALSE)
   }
-
-  p <- ggplot(bar_df, aes(x = reorder(Description, neg_log10_p),
-                           y = ifelse(direction == sprintf("Up: %s", comp$ident1),
-                                      neg_log10_p, -neg_log10_p),
-                           fill = direction)) +
-    geom_col() +
-    coord_flip() +
-    scale_fill_manual(values = c("#B2182B", "#2166AC")) +
-    labs(title = sprintf("GO:BP -- %s | %s", subset_name, comp$label),
-         x = NULL, y = expression(-log[10](p[adj]))) +
-    theme_classic(base_size = 14)
-
-  ggsave(output_file, plot = p, width = 10, height = max(6, nrow(bar_df) * 0.3 + 2),
-         units = "in", device = "pdf", useDingbats = FALSE)
   p
 }
 ```
