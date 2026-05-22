@@ -740,3 +740,71 @@ for (comp in comparisons) {
   }
 }
 ```
+
+---
+
+## Figure Sizing Reference
+
+| Plot | Width | Height |
+|---|---|---|
+| Volcano | 9 | 7 |
+| Overall heatmap | 12 | 10 |
+| Functional heatmap | 12 | `max(8, n_genes * 0.28 + 3)` |
+| Top-gene dot plot | `max(8, n_ctypes * 1.2 + 3)` | `max(6, 20 * 0.32 + 2.5)` |
+| Functional dot plot | `n_ctypes * 0.55 * 2 + 7` | `max(6, n_fg * 0.28 + 3)` |
+| Functional dot plot (with dir strip) | above + 1 | same |
+| Pathway bar plot | 15 | `max(4, n_bars * 0.28 + 2)` |
+
+---
+
+## Output File Naming Convention
+
+```
+DE_full_{subset}_{CompLabel}.csv
+volcano_{subset}_{CompLabel}.pdf
+heatmap_overall_{subset}_{CompLabel}.pdf
+heatmap_functional_{subset}_{CompLabel}.pdf
+dotplot_topgenes_{subset}_{CompLabel}.pdf
+dotplot_functional_{subset}_{CompLabel}.pdf
+dotplot_functional_dir_{subset}_{CompLabel}.pdf
+pathway_barplot_{subset}_{CompLabel}.pdf
+{project}_proposed_gene_lists.yaml
+```
+
+`{CompLabel}` is `comp$label`, e.g. `ViscFat_vs_SubQFat`. Underscores only — no
+spaces or special characters in filenames.
+
+---
+
+## Brief Configuration
+
+```yaml
+optional_analyses:
+  deg:
+    enabled: true
+    comparisons:
+      - label: "GroupA_vs_GroupB"
+        ident1: "Group A"      # shown RIGHT in heatmap, positive log2FC direction
+        ident2: "Group B"      # shown LEFT  in heatmap, negative log2FC direction
+        col: "tissue_type"     # metadata column holding group labels
+      - label: "CondX_vs_CondY"
+        ident1: "Condition X"
+        ident2: "Condition Y"
+        col: "condition"
+    scopes:
+      - name: AllCells
+        cell_types: null        # null = use whole subset object
+      - name: SubtypeA
+        cell_types: [SubtypeA1, SubtypeA2]
+      - name: SubtypeB
+        cell_types: [SubtypeB1, SubtypeB2, SubtypeB3]
+    thresholds:
+      padj: 0.05
+      lfc:  0.5
+      n_cells_heatmap: 300
+      n_top_genes_heatmap: 30
+      n_label_volcano: 25
+    functional_gene_sets: project_specific   # define inline in CLAUDE.md
+    pathway_analysis: true
+    n_pathways: 15
+```
