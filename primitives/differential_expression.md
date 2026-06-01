@@ -21,6 +21,39 @@ Designed to run across multiple comparison pairs × multiple cell-type scopes.
 
 ---
 
+## Axis A: Cluster marker DE
+
+Cluster marker DE (FindAllMarkers, condition-agnostic, one-vs-rest per cluster) is NOT
+the responsibility of this primitive. It is handled by:
+
+- `@modules/celltype_subclustering.md` Step 3 (FindAllMarkers within subclustering module)
+- `@pipelines/large_dataset/pipeline.md` Stage 4 (whole-object annotation)
+- `@pipelines/large_dataset/pipeline.md` Stage 6 (subset annotation)
+
+This primitive (`differential_expression.md`) handles Axis B and Axis C only.
+
+---
+
+## Three-axis DE conventions
+
+When both a condition column (`group_col`) and a cluster/subtype column (`label_col`)
+exist on the object, the full DE pattern covers three axes:
+
+**Axis A (cluster markers):** FindAllMarkers, condition-agnostic, one-vs-rest per cluster.
+Handled by `@modules/celltype_subclustering.md`. NOT produced by this primitive.
+
+**Axis B (condition global):** Two-group comparison across all cells (or a specified scope).
+Standard use: `comparisons:` block with `per_cluster: false` (default). Output per scope.
+
+**Axis C (condition within cluster):** Same two-group comparison run independently within
+each unique value of `label_col`. Enabled by setting `per_cluster: true` on a comparison
+entry and providing `label_col`. Gated by `MIN_CELLS_PER_CLUSTER` (default 100) per side
+per cluster. Output filename: `DE_full_{comp_label}_within_{label_value}.csv`.
+
+All three axes should run by default unless the brief explicitly suppresses one.
+
+---
+
 ## Critical Constraints
 
 | Do NOT | Do Instead | Why |
@@ -43,6 +76,7 @@ LFC_CUT         <- 0.5        # |log2FC| minimum
 N_CELLS_HM      <- 300        # max cells per group sampled into heatmaps
 N_TOP_GENES_HM  <- 30         # top N genes per direction for the overall heatmap
 N_LABEL_VOLCANO <- 25         # genes labelled per direction on volcano
+MIN_CELLS_PER_CLUSTER <- 100  # Axis C minimum: cells per side per cluster (condition_per_cluster)
 set.seed(42)
 
 # ── Comparisons ───────────────────────────────────────────────────────────────
@@ -508,6 +542,10 @@ make_functional_dotplot <- function(so_obj, markers, comp, subset_name,
                                      subtype_colors,
                                      show_direction = FALSE,
                                      output_file) {
+  # Callers MUST NOT bypass the DE filter below via inline code.
+  # See "Gene-set dotplots: filtered only" section for the policy.
+  # If this function returns NULL, log the decision to output/decision_log.txt.
+
   # Build dot_df from functional_gene_sets genes that are significant
   all_fg_genes <- unique(unlist(functional_gene_sets))
   sig_df <- markers %>%
@@ -751,72 +789,149 @@ make_pathway_barplot <- function(markers, comp, subset_name, universe_genes,
 
 ---
 
+## Gene-set dotplots: filtered only
+
+The sanctioned function for gene-set dotplots is `make_functional_dotplot()`. It filters
+by `p_val_adj < PADJ_CUT` AND `|avg_log2FC| > LFC_CUT` (thresholds from the config block,
+defaulting to 0.05 and 0.5) before plotting. Only genes that are BOTH in the gene set AND
+significantly DE appear in the output.
+
+**Rules:**
+- Do NOT invent parallel inline functions (e.g., `make_geneset_dotplot()`) that skip the filter.
+- If a gene set has zero genes passing the filter for a given comparison, `make_functional_dotplot()`
+  returns NULL. The caller must log this to `output/decision_log.txt`:
+  ```r
+  p_fd <- make_functional_dotplot(...)
+  if (is.null(p_fd)) {
+    cat(sprintf("%s: %s -- no significant genes in gene set, plot skipped\n",
+                Sys.time(), paste(comp$label, scope_name, sep = "_")),
+        file = "output/decision_log.txt", append = TRUE)
+  }
+  ```
+- The filter is not negotiable without explicit brief approval and deployment agent sign-off.
+
+---
+
+## Dotplot views: by Condition vs by Group
+
+Both views (the "by Condition" 2-level view and the "by Group" multi-level view) filter
+the gene set using the SAME DE result: the primary condition-vs-condition comparison
+(e.g., Tumor vs Normal).
+
+- **"by Condition" view:** columns = ident1, ident2 (2 levels); rows = significantly DE genes
+  from the primary comparison filtered by `make_functional_dotplot()`.
+- **"by Group" view:** columns = all unique group values (N levels); rows = the SAME filtered
+  genes as the "by Condition" view. The group view shows how those genes distribute across
+  all groups, not which genes differ across groups.
+
+**Do NOT** filter the "by Group" view by a union of pairwise group comparisons or by a
+multi-group test. Use the primary condition comparison filter for both views. This ensures:
+- The same gene set appears in both views, enabling direct cross-view comparison.
+- No additional DE computation is required for the expanded view.
+- The interpretation is coherent: "among genes that differ in Tumor vs Normal, how does
+  each group distribute?"
+
+---
+
 ## Main Analysis Loop
 
 ```r
 # Requires: comparisons list, cell_subsets list, LABEL_COL, group_colors, subtype_colors,
-#           functional_gene_sets (project_specific — must be defined in CLAUDE.md context)
+#           functional_gene_sets (project_specific -- must be defined in CLAUDE.md context)
+# Axis C requires: comp$per_cluster = TRUE, comp$label_col set to cluster/subtype column
 
 for (comp in comparisons) {
-  for (scope_name in names(cell_subsets)) {
-    scope_labels <- cell_subsets[[scope_name]]
-    so_scope <- if (is.null(scope_labels)) so_obj else
-                  subset(so_obj, cells = rownames(so_obj@meta.data)[so_obj@meta.data[[LABEL_COL]] %in% scope_labels])
+  if (isTRUE(comp$per_cluster)) {
+    # Axis C: condition within each cluster
+    stopifnot(!is.null(comp$label_col), comp$label_col %in% colnames(obj@meta.data))
+    label_vals <- sort(unique(obj@meta.data[[comp$label_col]]))
+    for (lv in label_vals) {
+      so_lv <- subset(obj, cells = which(obj@meta.data[[comp$label_col]] == lv))
+      n1 <- sum(so_lv@meta.data[[comp$col]] == comp$ident1)
+      n2 <- sum(so_lv@meta.data[[comp$col]] == comp$ident2)
+      if (n1 < MIN_CELLS_PER_CLUSTER || n2 < MIN_CELLS_PER_CLUSTER) {
+        message(sprintf("SKIPPED Axis C %s within %s: too few cells (%d / %d, min %d)",
+                        comp$label, lv, n1, n2, MIN_CELLS_PER_CLUSTER))
+        next
+      }
+      markers <- run_findmarkers(so_lv, comp)
+      if (is.null(markers)) next
 
-    markers <- run_findmarkers(so_scope, comp)
-    if (is.null(markers)) next
-
-    out_prefix <- file.path(output_dir, sprintf("%s_%s", scope_name, comp$label))
-    dir.create(dirname(out_prefix), recursive = TRUE, showWarnings = FALSE)
-
-    # Save unfiltered CSV
-    write.csv(markers, paste0(out_prefix, "_DE_full.csv"), row.names = FALSE)
-
-    # Volcano
-    p_vol <- make_volcano(markers, comp, scope_name, functional_gene_sets = functional_gene_sets)
-    ggsave(paste0(out_prefix, "_volcano.pdf"), plot = p_vol, width = 9, height = 8,
-           units = "in", device = "pdf", useDingbats = FALSE)
-
-    # Heatmaps
-    ht_overall <- make_overall_heatmap(so_scope, markers, comp, scope_name,
-                                        label_col = LABEL_COL,
-                                        subtype_colors = subtype_colors,
-                                        group_colors = group_colors)
-    if (!is.null(ht_overall)) {
-      pdf(paste0(out_prefix, "_heatmap_overall.pdf"), width = 12, height = 10)
-      ComplexHeatmap::draw(ht_overall)
-      dev.off()
+      out_prefix <- file.path(output_dir, sprintf("%s_within_%s", comp$label, lv))
+      dir.create(dirname(out_prefix), recursive = TRUE, showWarnings = FALSE)
+      write.csv(markers, paste0(out_prefix, "_DE_full.csv"), row.names = FALSE)
+      message(sprintf("Axis C: %s within %s -- %d sig genes (padj<%.2f, |lfc|>%.1f)",
+                      comp$label, lv,
+                      sum(markers$p_val_adj < PADJ_CUT & abs(markers$avg_log2FC) > LFC_CUT),
+                      PADJ_CUT, LFC_CUT))
     }
+  } else {
+    # Axis B: condition global (scope-based loop)
+    for (scope_name in names(cell_subsets)) {
+      scope_labels <- cell_subsets[[scope_name]]
+      so_scope <- if (is.null(scope_labels)) so_obj else
+                    subset(so_obj, cells = rownames(so_obj@meta.data)[so_obj@meta.data[[LABEL_COL]] %in% scope_labels])
 
-    # Functional plots — only if functional_gene_sets is defined
-    if (exists("functional_gene_sets") && !is.null(functional_gene_sets)) {
-      ht_func <- make_functional_heatmap(so_scope, markers, comp, scope_name,
+      markers <- run_findmarkers(so_scope, comp)
+      if (is.null(markers)) next
+
+      out_prefix <- file.path(output_dir, sprintf("%s_%s", scope_name, comp$label))
+      dir.create(dirname(out_prefix), recursive = TRUE, showWarnings = FALSE)
+
+      # Save unfiltered CSV
+      write.csv(markers, paste0(out_prefix, "_DE_full.csv"), row.names = FALSE)
+
+      # Volcano
+      p_vol <- make_volcano(markers, comp, scope_name, functional_gene_sets = functional_gene_sets)
+      ggsave(paste0(out_prefix, "_volcano.pdf"), plot = p_vol, width = 9, height = 8,
+             units = "in", device = "pdf", useDingbats = FALSE)
+
+      # Heatmaps
+      ht_overall <- make_overall_heatmap(so_scope, markers, comp, scope_name,
                                           label_col = LABEL_COL,
                                           subtype_colors = subtype_colors,
-                                          group_colors = group_colors,
-                                          functional_gene_sets = functional_gene_sets)
-      if (!is.null(ht_func)) {
-        pdf(paste0(out_prefix, "_heatmap_functional.pdf"), width = 12, height = 10)
-        ComplexHeatmap::draw(ht_func)
+                                          group_colors = group_colors)
+      if (!is.null(ht_overall)) {
+        pdf(paste0(out_prefix, "_heatmap_overall.pdf"), width = 12, height = 10)
+        ComplexHeatmap::draw(ht_overall)
         dev.off()
       }
 
-      make_topgene_dotplot(so_scope, markers, comp, scope_name,
-                            label_col = LABEL_COL, group_col = comp$col,
-                            subtype_colors = subtype_colors, n_each = 12,
-                            output_file = paste0(out_prefix, "_topgene_dotplot.pdf"))
+      # Functional plots -- only if functional_gene_sets is defined
+      if (exists("functional_gene_sets") && !is.null(functional_gene_sets)) {
+        ht_func <- make_functional_heatmap(so_scope, markers, comp, scope_name,
+                                            label_col = LABEL_COL,
+                                            subtype_colors = subtype_colors,
+                                            group_colors = group_colors,
+                                            functional_gene_sets = functional_gene_sets)
+        if (!is.null(ht_func)) {
+          pdf(paste0(out_prefix, "_heatmap_functional.pdf"), width = 12, height = 10)
+          ComplexHeatmap::draw(ht_func)
+          dev.off()
+        }
 
-      make_functional_dotplot(so_scope, markers, comp, scope_name,
-                               label_col = LABEL_COL, group_col = comp$col,
-                               functional_gene_sets = functional_gene_sets,
-                               subtype_colors = subtype_colors, show_direction = FALSE,
-                               output_file = paste0(out_prefix, "_functional_dotplot.pdf"))
+        make_topgene_dotplot(so_scope, markers, comp, scope_name,
+                              label_col = LABEL_COL, group_col = comp$col,
+                              subtype_colors = subtype_colors, n_each = 12,
+                              output_file = paste0(out_prefix, "_topgene_dotplot.pdf"))
+
+        p_fd <- make_functional_dotplot(so_scope, markers, comp, scope_name,
+                                 label_col = LABEL_COL, group_col = comp$col,
+                                 functional_gene_sets = functional_gene_sets,
+                                 subtype_colors = subtype_colors, show_direction = FALSE,
+                                 output_file = paste0(out_prefix, "_functional_dotplot.pdf"))
+        if (is.null(p_fd)) {
+          cat(sprintf("%s: %s -- no significant genes in gene set, functional dotplot skipped\n",
+                      Sys.time(), paste(scope_name, comp$label, sep = "_")),
+              file = "output/decision_log.txt", append = TRUE)
+        }
+      }
+
+      # Pathway barplot
+      universe <- rownames(so_scope)
+      make_pathway_barplot(markers, comp, scope_name, universe_genes = universe,
+                            output_file = paste0(out_prefix, "_pathways.pdf"))
     }
-
-    # Pathway barplot
-    universe <- rownames(so_scope)
-    make_pathway_barplot(markers, comp, scope_name, universe_genes = universe,
-                          output_file = paste0(out_prefix, "_pathways.pdf"))
   }
 }
 ```
@@ -862,18 +977,23 @@ spaces or special characters in filenames.
 optional_analyses:
   deg:
     enabled: true
+    axes:
+      condition_global: true        # Axis B: condition comparison across all cells / scopes
+      condition_per_cluster: true   # Axis C: condition comparison within each cluster value
+    label_col: "subtype_label"      # required for Axis C; column holding cluster/subtype labels
     comparisons:
       - label: "GroupA_vs_GroupB"
-        ident1: "Group A"      # shown RIGHT in heatmap, positive log2FC direction
-        ident2: "Group B"      # shown LEFT  in heatmap, negative log2FC direction
-        col: "tissue_type"     # metadata column holding group labels
-      - label: "CondX_vs_CondY"
-        ident1: "Condition X"
-        ident2: "Condition Y"
-        col: "condition"
+        ident1: "Group A"           # shown RIGHT in heatmap, positive log2FC direction
+        ident2: "Group B"           # shown LEFT  in heatmap, negative log2FC direction
+        col: "tissue_type"          # metadata column holding group labels
+      - label: "Tumor_vs_Normal"
+        ident1: "Tumor"
+        ident2: "Normal"
+        col: "Condition"
+        per_cluster: true           # opts this comparison into Axis C iteration
     scopes:
       - name: AllCells
-        cell_types: null        # null = use whole subset object
+        cell_types: null            # null = use whole subset object
       - name: SubtypeA
         cell_types: [SubtypeA1, SubtypeA2]
       - name: SubtypeB
@@ -884,6 +1004,8 @@ optional_analyses:
       n_cells_heatmap: 300
       n_top_genes_heatmap: 30
       n_label_volcano: 25
+      min_cells: 10                 # Axis B gate: minimum cells per side for global comparison
+      min_cells_per_cluster: 100    # Axis C gate: minimum cells per side per cluster
     functional_gene_sets: project_specific   # define inline in CLAUDE.md
     pathway_analysis: true
     n_pathways: 15
