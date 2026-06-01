@@ -262,8 +262,44 @@ The brief key in `downstream_analyses` maps to the module file as follows:
 | `bulk_concordance` | @modules/bulk_concordance.md |
 | `de_comprehensive_csv` | @modules/de_comprehensive_csv.md |
 | `cellchat` | @modules/cellchat.md |
+| `deg` | @primitives/differential_expression.md [1] |
 
-### 8.2 Validation
+[1] `deg` dispatches to a **primitive** (not a module). It is invoked via an explicit
+`optional_analyses.deg` configuration block in the brief. Load
+`@primitives/differential_expression.md` before executing any comparison in this key.
+
+### 8.2 Three-axis DE pattern
+
+When both a condition column (`group_col`) and a cluster/subtype column (`label_col`) exist
+on the object, the default DE pattern covers three axes. All three should run by default
+unless the brief explicitly suppresses one:
+
+- **Axis A (cluster markers):** Produced by `@modules/celltype_subclustering.md` during
+  annotation, or by Stage 4 for top-level clustering. FindAllMarkers, condition-agnostic,
+  one-vs-rest per cluster. NOT produced by the `deg` primitive.
+- **Axis B (condition global):** Via `deg.axes.condition_global: true`. Runs the primary
+  condition comparison across all cells (or scopes) using `@primitives/differential_expression.md`.
+- **Axis C (condition per cluster):** Via `deg.axes.condition_per_cluster: true` with
+  `label_col` set. Iterates over every unique value of `label_col` and runs the condition
+  comparison within each subset. Gated by 100 cells per side per cluster; underpowered
+  clusters are skipped and logged. Output: `DE_full_{comp_label}_within_{label_value}.csv`.
+
+### 8.3 Gene-set dotplot enforcement
+
+Any gene-set dotplot in any module or job script must call `make_functional_dotplot()`
+from `@primitives/differential_expression.md`. This function filters by
+`p_val_adj < PADJ_CUT` AND `|avg_log2FC| > LFC_CUT` before plotting.
+
+Inline reinventions that skip the DE filter (e.g., a `make_geneset_dotplot()` that plots
+all genes in the set regardless of significance) are **forbidden**. If a job script
+requires gene-set-on-expression visualization that genuinely should not be DE filtered,
+the brief must explicitly request it and the deployment agent must approve -- this is not
+a default-available capability.
+
+If `make_functional_dotplot()` returns NULL (zero genes pass the filter), log the decision
+to `output/decision_log.txt` and do not render an empty plot.
+
+### 8.4 Validation
 
 Before executing any module:
 - Confirm each key in `downstream_analyses` appears in the mapping table above
@@ -271,14 +307,14 @@ Before executing any module:
 - If validation fails for a module, log the error to `output/<module_name>/error.log`
   and skip that module (continue with others)
 
-### 8.3 Input object
+### 8.5 Input object
 
 By default, Stage 8 modules operate on `output/subset/subset_annotated.rds` (the
 annotated subset). If no subset was produced (Stage 6 was skipped), modules operate
 on `output/annotation/annotated.rds`. A module may specify `input_object` in its
 config block to override the default input path.
 
-### 8.4 Execution order
+### 8.6 Execution order
 
 Execute in this dependency-aware order:
 
@@ -288,9 +324,9 @@ Execute in this dependency-aware order:
    otherwise it can run in the independent group below
 3. All remaining independent modules (no inter-module dependencies):
    `de_comprehensive_csv`, `feature_umap_plot`, `subclustering`, `metabolic_profile`,
-   `trajectory`, `pyscenic`, `cellchat`
+   `trajectory`, `pyscenic`, `cellchat`, `deg`
 
-### 8.5 Error handling
+### 8.7 Error handling
 
 If a module raises an exception, save the full error trace to
 `output/<module_name>/error.log`. Continue with the next module. Report all module
