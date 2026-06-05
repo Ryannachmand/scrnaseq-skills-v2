@@ -185,6 +185,232 @@ correction and destroys column ordering.
 
 ---
 
+## EC Biological Gene Categories
+
+Three lab-curated EC gene category reference lists. Use these whenever an
+analysis is organized by EC functional biology (e.g. cross-organ EC dotplots,
+EC subcluster dotplots split by Condition or Group, EC module scoring,
+pathway enrichment universes).
+
+These are REFERENCE UNIVERSES for filtering and scoring, NOT plot-ready panels.
+For plotting, apply the "Dotplot gene selection rule" below to subset to genes
+showing statistical change relevant to the plot's stratification axis.
+
+Genes may appear in multiple categories (e.g. THBS1-4 in Angiocrine and ECM;
+SPARC/SPARCL1 in both; BMP2/4/6/7 in both). This is biologically correct --
+these molecules are pleiotropic. Do not deduplicate across categories.
+If module scoring multiple categories together is desired, note that genes
+in multiple categories will contribute to each module's score.
+
+### Angiocrine Factors
+
+```r
+angiocrine_factors <- c(
+  "VEGFA", "VEGFB", "VEGFC", "VEGFD", "PGF",
+  "ANGPT1", "ANGPT2", "ANGPT4", "ANGPTL1", "ANGPTL2", "ANGPTL3", "ANGPTL4",
+  "FGF1", "FGF2", "FGF7", "FGF9", "FGF10", "FGF18", "FGF21", "FGF23",
+  "DLL1", "DLL3", "DLL4", "JAG1", "JAG2",
+  "WNT1", "WNT2", "WNT2B", "WNT3", "WNT3A", "WNT4", "WNT5A", "WNT5B",
+  "WNT7A", "WNT7B", "WNT9A", "WNT9B", "WNT10A", "WNT10B", "WNT11", "WNT16",
+  "BMP2", "BMP4", "BMP6", "BMP7", "GDF11", "GDF15",
+  "PDGFA", "PDGFB", "PDGFC", "PDGFD",
+  "HGF", "IGF1", "IGF2",
+  "CTGF", "CYR61", "NOV",
+  "SEMA3A", "SEMA3C", "SEMA3E", "SEMA3F", "SEMA4A", "SEMA4D", "SEMA4F",
+  "EFNA1", "EFNA2", "EFNA3", "EFNA4", "EFNA5",
+  "EFNB1", "EFNB2", "EFNB3",
+  "NTN1", "NTN4", "SLIT2", "SLIT3",
+  "APLN", "APELA",
+  "EDN1", "EDN2", "EDN3",
+  "ADM", "ADM2",
+  "NRG1", "NRG2", "NRG3", "NRG4",
+  "THBS1", "THBS2", "THBS3", "THBS4",
+  "SPARC", "SPARCL1",
+  "RSPO1", "RSPO2", "RSPO3", "RSPO4",
+  "KITLG", "FLT3LG"
+)
+```
+
+### Cytokines & Immune Modulatory
+
+Union of surface receptors and cytokines/chemokines. Single category per lab
+convention (Test 1 brief: "merging Surface Markers into Cytokines & Immune
+Modulatory"). Captures cell-surface signaling receptors AND secreted ligands
+in one biology-oriented set.
+
+```r
+cytokines_immune_modulatory <- c(
+  # --- Surface receptors ---
+  "IL1R1", "IL1R2", "IL1RL1", "IL1RL2", "IL2RA", "IL2RB", "IL2RG",
+  "IL3RA", "IL4R", "IL5RA", "IL6R", "IL6ST", "IL7R", "IL9R",
+  "IL10RA", "IL10RB", "IL11RA", "IL12RB1", "IL12RB2", "IL13RA1", "IL13RA2",
+  "IL15RA", "IL17RA", "IL17RB", "IL17RC", "IL17RD", "IL17RE",
+  "IL18R1", "IL18RAP", "IL20RA", "IL20RB", "IL21R", "IL22RA1", "IL22RA2",
+  "IL23R", "IL27RA", "IL31RA",
+  "ICAM1", "ICAM2", "ICAM3", "ICAM4", "ICAM5",
+  "VCAM1", "PECAM1", "MCAM", "ALCAM", "NCAM1", "NCAM2",
+  "CADM1", "CADM2", "CADM3", "CADM4",
+  "ESAM", "JAM2", "JAM3", "JAML",
+  "SELE", "SELP", "SELL",
+  "ITGA1", "ITGA2", "ITGA3", "ITGA4", "ITGA5", "ITGA6", "ITGA7", "ITGA8", "ITGA9",
+  "ITGAV", "ITGAE", "ITGAL", "ITGAM", "ITGAX",
+  "ITGB1", "ITGB2", "ITGB3", "ITGB4", "ITGB5", "ITGB6", "ITGB7", "ITGB8",
+  "TGFBR1", "TGFBR2", "TGFBR3", "ACVR1", "ACVR1B", "ACVR1C", "ACVR2A", "ACVR2B",
+  "BMPR1A", "BMPR1B", "BMPR2",
+  "EDNRA", "EDNRB", "EGFR", "FGFR1", "FGFR2", "FGFR3", "FGFR4",
+  "KDR", "FLT1", "FLT4", "TEK", "TIE1",
+  "PDGFRA", "PDGFRB", "MET", "AXL", "MERTK", "TYRO3",
+  "NOTCH1", "NOTCH2", "NOTCH3", "NOTCH4",
+  "EPHA1", "EPHA2", "EPHA3", "EPHA4", "EPHB1", "EPHB2", "EPHB3", "EPHB4",
+  "CXCR1", "CXCR2", "CXCR3", "CXCR4", "CXCR5", "CXCR6",
+  "CCR1", "CCR2", "CCR3", "CCR4", "CCR5", "CCR6", "CCR7", "CCR8", "CCR9", "CCR10",
+  "ACKR1", "ACKR2", "ACKR3", "ACKR4",
+  "IFNAR1", "IFNAR2", "IFNGR1", "IFNGR2",
+  "TNFRSF1A", "TNFRSF1B", "NGFR", "LIFR", "OSMR", "CNTFR",
+  "CSF1R", "CSF2RA", "CSF2RB", "CSF3R",
+  # --- Cytokines, chemokines, growth factors ---
+  "IL1A", "IL1B", "IL2", "IL3", "IL4", "IL5", "IL6", "IL7", "IL8", "IL9",
+  "IL10", "IL11", "IL12A", "IL12B", "IL13", "IL14", "IL15", "IL16", "IL17A", "IL17B",
+  "IL17C", "IL17D", "IL17F", "IL18", "IL19", "IL20", "IL21", "IL22", "IL23A", "IL24",
+  "IL25", "IL26", "IL27", "IL31", "IL32", "IL33", "IL34", "IL36A", "IL36B", "IL36G",
+  "IL37", "EBI3",
+  "IFNA1", "IFNA2", "IFNB1", "IFNG", "IFNL1", "IFNL2", "IFNL3",
+  "TNF", "LTA", "LTB", "TNFSF4", "TNFSF8", "TNFSF9", "TNFSF10", "TNFSF11",
+  "TNFSF12", "TNFSF13", "TNFSF13B", "TNFSF14", "TNFSF15", "TNFSF18",
+  "TGFB1", "TGFB2", "TGFB3", "BMP2", "BMP4", "BMP6", "BMP7",
+  "GDF15", "MSTN", "INHBA", "INHBB", "NODAL",
+  "CSF1", "CSF2", "CSF3",
+  "LIF", "OSM", "CTF1", "CNTF", "KITLG", "FLT3LG", "THPO", "EPO",
+  "CXCL1", "CXCL2", "CXCL3", "CXCL5", "CXCL6", "CXCL8", "CXCL9", "CXCL10",
+  "CXCL11", "CXCL12", "CXCL13", "CXCL14", "CXCL16", "CXCL17",
+  "CCL1", "CCL2", "CCL3", "CCL4", "CCL5", "CCL7", "CCL8", "CCL11", "CCL13",
+  "CCL14", "CCL15", "CCL16", "CCL17", "CCL18", "CCL19", "CCL20", "CCL21",
+  "CCL22", "CCL23", "CCL24", "CCL25", "CCL26", "CCL27", "CCL28",
+  "CX3CL1", "XCL1", "XCL2"
+)
+```
+
+### Extracellular Matrix (ECM)
+
+```r
+extracellular_matrix <- c(
+  # --- Collagens ---
+  "COL1A1", "COL1A2", "COL2A1", "COL3A1",
+  "COL4A1", "COL4A2", "COL4A3", "COL4A4", "COL4A5", "COL4A6",
+  "COL5A1", "COL5A2", "COL5A3",
+  "COL6A1", "COL6A2", "COL6A3", "COL6A5", "COL6A6",
+  "COL7A1", "COL8A1", "COL8A2", "COL9A1", "COL9A2", "COL9A3",
+  "COL10A1", "COL11A1", "COL11A2", "COL12A1", "COL13A1", "COL14A1", "COL15A1",
+  "COL16A1", "COL17A1", "COL18A1", "COL19A1", "COL20A1", "COL21A1", "COL22A1",
+  "COL23A1", "COL24A1", "COL25A1", "COL26A1", "COL27A1", "COL28A1",
+  # --- Laminins ---
+  "LAMA1", "LAMA2", "LAMA3", "LAMA4", "LAMA5",
+  "LAMB1", "LAMB2", "LAMB3", "LAMB4",
+  "LAMC1", "LAMC2", "LAMC3",
+  # --- Fibronectin and elastin ---
+  "FN1", "FNDC1", "FNDC3A", "FNDC3B", "FNDC4", "FNDC5",
+  "ELN", "EMILIN1", "EMILIN2", "EMILIN3",
+  # --- Proteoglycans ---
+  "DCN", "BGN", "LUM", "FMOD", "PRELP", "OMD", "OGN", "ASPN", "ECM2", "KERA",
+  "VCAN", "ACAN", "NCAN", "BCAN",
+  "HSPG2",
+  "SDC1", "SDC2", "SDC3", "SDC4",
+  "GPC1", "GPC2", "GPC3", "GPC4", "GPC5", "GPC6",
+  # --- Matricellular ---
+  "THBS1", "THBS2", "THBS3", "THBS4", "THBS5",
+  "SPARC", "SPARCL1", "SPOCK1", "SPOCK2", "SPOCK3",
+  "TNC", "TNN", "TNR", "TNXB",
+  "POSTN", "TGFBI",
+  "FBLN1", "FBLN2", "FBLN5", "FBLN7",
+  "MFAP1", "MFAP2", "MFAP3", "MFAP4", "MFAP5",
+  "LTBP1", "LTBP2", "LTBP3", "LTBP4",
+  "NID1", "NID2",
+  # --- MMPs / TIMPs / ADAMTSs ---
+  "MMP1", "MMP2", "MMP3", "MMP7", "MMP8", "MMP9", "MMP10", "MMP11", "MMP12", "MMP13",
+  "MMP14", "MMP15", "MMP16", "MMP17", "MMP19", "MMP20", "MMP21", "MMP23B", "MMP24",
+  "MMP25", "MMP26", "MMP27", "MMP28",
+  "TIMP1", "TIMP2", "TIMP3", "TIMP4",
+  "ADAMTS1", "ADAMTS2", "ADAMTS3", "ADAMTS4", "ADAMTS5", "ADAMTS6", "ADAMTS7",
+  "ADAMTS8", "ADAMTS9", "ADAMTS10", "ADAMTS12", "ADAMTS13", "ADAMTS14",
+  "ADAMTS15", "ADAMTS16", "ADAMTS17", "ADAMTS18", "ADAMTS19", "ADAMTS20",
+  # --- Crosslinking and other ---
+  "LOX", "LOXL1", "LOXL2", "LOXL3", "LOXL4",
+  "VTN", "PCOLCE", "PCOLCE2",
+  "SERPINE1", "SERPINE2", "SERPINH1",
+  "CTSK", "CTSB", "CTSL", "CTSS"
+)
+```
+
+---
+
+## Dotplot Gene Selection Rule
+
+When generating a dotplot from any EC gene category (or any other large
+reference gene list), DO NOT plot the full reference list. Subset to genes
+showing statistical change along the plot's stratification axis.
+
+### Filter
+
+For each gene in the reference list, include in the plot if:
+
+```
+p_val_adj < 0.1  AND  abs(avg_log2FC) > 0.25
+```
+
+These thresholds correspond to "significant or near-significant" by lab
+convention. The logFC floor excludes biologically trivial changes that
+happen to be statistically significant in well-powered comparisons.
+
+### DE source -- matches the plot's stratification axis
+
+The DE results used for filtering must match the biological question the
+plot is asking:
+
+- Plot stratified by Condition (Tumor vs Normal) -> filter by Condition DE
+- Plot stratified by Group (Normal, PTC-FV, PTC-CT, HCC, ATC) -> filter by
+  per-Group DE vs Normal (union: include a gene if it passes the filter
+  for ANY tumor group vs Normal)
+- Plot stratified by cell type or subcluster -> filter by per-cell-type DE
+  for the relevant contrast
+- Cross-organ plot -> filter by organ-vs-rest DE for at least one organ
+
+If multiple plots are produced from the same gene category (e.g. one by
+Condition and one by Group), each uses its own gene selection -- they will
+typically share some genes and differ on others. This is correct.
+
+### Floor
+
+If fewer than 4 genes pass the filter, show the top 10 genes from the
+reference list by abs(avg_log2FC), regardless of significance. Annotate
+the plot title or caption noting that the filter floor was triggered (e.g.
+"showing top 10 by |logFC|; <4 genes passed p_adj<0.1, |logFC|>0.25").
+
+### Ceiling
+
+If more than 30 genes pass the filter, show the top 30 by abs(avg_log2FC).
+Annotate the plot title or caption noting truncation (e.g. "top 30 of N
+genes passing filter").
+
+### Single-direction signature lists
+
+If the input is already a pre-filtered signature gene list (e.g. signature
+derivation output, custom curated list), the filter does not apply --
+plot all genes in the signature list directly, up to the 30-gene ceiling.
+
+### What to do with the full reference list
+
+The full reference lists ARE used for:
+- AddModuleScore (use the full list -- breadth is the goal)
+- Pathway enrichment universes
+- DE result filtering (when reporting which genes in a category changed)
+- Heatmaps with > 30 genes that include only filtered-significant genes
+  but where individual gene labels are not the focus
+
+The filter rule applies primarily to DOTPLOTS where each gene is
+individually labeled and the goal is interpretability of specific genes.
+
+---
+
 ## Notes for the Deployment Agent
 
 1. Always check validated_examples.yaml for the target project before generating CLAUDE.md.
