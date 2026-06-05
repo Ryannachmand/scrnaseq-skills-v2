@@ -789,6 +789,57 @@ make_pathway_barplot <- function(markers, comp, subset_name, universe_genes,
 
 ---
 
+## Adapter: make_pathway_barplot() for one-directional (signature) gene lists
+
+When the input is a pre-filtered gene list rather than a bidirectional DE result,
+construct a synthetic markers data frame and a direction-fixed comp object:
+
+```r
+# sig_genes: character vector of signature genes (already filtered, all positive direction)
+# universe_genes: rownames(so) -- all expressed genes
+
+# Build synthetic markers data frame
+markers_synthetic <- data.frame(
+  gene         = sig_genes,
+  avg_log2FC   =  1.0,         # all positive -- will pass LFC_CUT filter
+  p_val_adj    =  0.001,       # below PADJ_CUT -- all genes pass
+  stringsAsFactors = FALSE
+)
+
+# Build synthetic comp object -- ident2 = NULL signals one-directional mode
+comp_synthetic <- list(
+  label  = "ThyroidEC_Signature",
+  ident1 = "inhouse_thyroid",      # REPLACE: the enriched direction label
+  ident2 = "other_organ",          # REPLACE: reference label (bars will be positive only)
+  col    = "sig_group"
+)
+
+# dir_colors must be defined before calling make_pathway_barplot()
+dir_colors <- c(
+  "inhouse_thyroid" = "#4393C3",   # REPLACE: color for the enriched direction
+  "other_organ"     = "#878787"    # REPLACE: color for reference (no bars, used for labels only)
+)
+
+make_pathway_barplot(
+  markers       = markers_synthetic,
+  comp          = comp_synthetic,
+  subset_name   = "Thyroid EC",
+  universe_genes = universe_genes,
+  n_pathways    = 15,
+  output_file   = "output/ec_organ_analysis/pathway/thyroid_EC_signature_pathway_barplot.pdf"
+)
+```
+
+This adapter ensures the full visual layer specification (gene annotations, bubbles,
+threshold lines, directional labels, coord_cartesian clip-off) is applied even for
+one-directional use cases. The ident2 bars will be absent (no negative genes in the
+synthetic markers) but the ident1 bars will carry all the patched visual layers.
+
+Do NOT write an inline ggplot pathway barplot. If the function signature doesn't fit,
+use this adapter rather than reinventing.
+
+---
+
 ## Gene-set dotplots: filtered only
 
 The sanctioned function for gene-set dotplots is `make_functional_dotplot()`. It filters

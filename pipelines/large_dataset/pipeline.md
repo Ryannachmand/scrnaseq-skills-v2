@@ -96,6 +96,25 @@ median nCount) to `output/qc/thresholds_proposed.yaml`.
 modifies the proposed thresholds. After approval, apply the filters and save the filtered
 object to `output/qc/filtered.rds`. Do not proceed to Stage 3 until CP1 is approved.
 
+### Doublet removal
+
+**Reference:** @primitives/doublet_removal.md
+**Runs:** After CP1 filter is applied and `output/qc/filtered.rds` is saved, before Stage 3.
+
+Load `output/qc/filtered.rds`. Call `run_doublet_removal()` with default parameters
+unless the brief specifies otherwise:
+
+```r
+obj <- run_doublet_removal(obj,
+                            sample_col      = "sample_id",
+                            score_threshold = 0.7,
+                            output_dir      = "output/doublets/")
+```
+
+Overwrite `output/qc/filtered.rds` with the doublet-filtered object. Stage 3 then
+loads this filtered object. Doublet annotations and per-sample summary are written
+to `output/doublets/` by `run_doublet_removal()` per @primitives/doublet_removal.md.
+
 ---
 
 ## Stage 3 — Process whole object

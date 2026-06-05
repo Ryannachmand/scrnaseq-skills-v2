@@ -87,23 +87,31 @@ make_stacked_violin <- function(df, label_col, gene_col = "gene",
 X-axis uses numeric positions, not discrete sample labels.
 Samples grouped by `group_col`, labeled by `subtype_col`.
 
+The `x_col` parameter identifies the x-axis variable -- each unique value becomes one bar.
+`sample_col` is a deprecated alias for `x_col`; new code should use `x_col`.
+
 ```r
 make_proportion_plot <- function(df,
-                                 sample_col,      # column identifying individual samples
-                                 group_col,       # column grouping samples (e.g. patient_id)
-                                 subtype_col,     # column holding cell type proportions
+                                 x_col = NULL,    # column identifying x-axis variable (each unique value = one bar)
+                                 group_col,       # column grouping x values (controls separator lines)
+                                 subtype_col,     # column holding cell type label (fill)
                                  group_colors,    # named vector: subtype → hex color
                                  output_file,
-                                 meta_tracks = list()) {
-  # df: one row per sample × subtype combination with a 'proportion' column
+                                 meta_tracks = list(),
+                                 sample_col = NULL) {  # deprecated alias for x_col
+  if (!is.null(sample_col)) {
+    warning("make_proportion_plot: 'sample_col' is deprecated; use 'x_col' instead")
+    if (is.null(x_col)) x_col <- sample_col
+  }
+  # df: one row per x_col × subtype combination with a 'proportion' column
   # meta_tracks: optional named list of additional metadata data frames for tile tracks
   #   each element: list(df=..., fill_scale=..., label_col=..., label_size=1.8)
 
-  # Numeric x positions — samples within each group are adjacent
+  # Numeric x positions — x values within each group are adjacent
   df <- df %>%
-    arrange(!!sym(group_col), !!sym(sample_col)) %>%
-    mutate(x_pos = as.numeric(factor(!!sym(sample_col),
-                                     levels = unique(!!sym(sample_col)))))
+    arrange(!!sym(group_col), !!sym(x_col)) %>%
+    mutate(x_pos = as.numeric(factor(!!sym(x_col),
+                                     levels = unique(!!sym(x_col)))))
 
   separator_x <- df %>%
     group_by(!!sym(group_col)) %>%
@@ -121,7 +129,7 @@ make_proportion_plot <- function(df,
     theme_classic(base_size = 14) +
     theme(legend.position = "right")
 
-  n_samples <- length(unique(df[[sample_col]]))
+  n_samples <- length(unique(df[[x_col]]))
   fig_h <- 5
   fig_w <- max(10 / 1.65, n_samples * 0.38 / 1.65 + 3.5)
 
@@ -144,6 +152,24 @@ make_proportion_plot <- function(df,
   p_final
 }
 ```
+
+### Cell type proportion plots -- choosing x_col (formerly sample_col)
+
+The `x_col` parameter controls what appears on the x-axis. Each unique value of `x_col`
+becomes one bar. Choose based on what the plot should show:
+
+- Aggregated by Condition (2 bars): x_col = "Condition"
+  Data: group_by(Condition, cell_type) then normalize within group_by(Condition)
+
+- Aggregated by Group (N bars): x_col = "Group"
+  Data: group_by(Group, cell_type) then normalize within group_by(Group)
+
+- Per-sample view (one bar per sample): x_col = "sample_id"
+  Data: group_by(sample_id, cell_type) then normalize within group_by(sample_id)
+
+The brief's "proportion plot by Condition" means 2 aggregated bars, NOT 12 per-sample
+bars grouped by Condition. The `group_col` parameter only controls separator line
+placement between groups of x values -- it does NOT control what the x-axis represents.
 
 ---
 

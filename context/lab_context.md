@@ -111,6 +111,39 @@ downsample_strategy: sample_level    # sample_level or dataset_level
 
 ---
 
+## Subclustering Conventions
+
+### Minimum cluster size
+
+Before running Mode A autonomous annotation, drop clusters with fewer than 50 cells:
+  cells_keep <- names(obj$seurat_clusters)[
+    obj$seurat_clusters %in% names(table(obj$seurat_clusters))[table(obj$seurat_clusters) >= 50]
+  ]
+  obj <- obj[, cells_keep]
+
+Clusters under 50 cells are likely noise or doublet aggregates. Annotating them adds
+spurious labels and inflates the subtype count. Log dropped clusters to decision_log.txt.
+
+Expected EC subtype count: 6-10 for a typical multi-sample dataset. If FindClusters
+returns > 12 clusters at the requested resolution, evaluate whether resolution should
+be lowered before proceeding with Mode A.
+
+### Sample-cluster proportion barplot -- always required
+
+The labeled UMAP and the sample-cluster proportion barplot are ALWAYS produced as a pair.
+The proportion barplot (CellType_proportion_by_sample.pdf) is not optional -- it is the
+standard diagnostic that reveals batch effects, sample imbalance, and over-clustering.
+
+Enforcement: After generating the labeled UMAP endpoint file, always call
+make_proportion_plot() for both:
+  - CellType_proportion_by_group.pdf (x = GROUP_COL, fill = subtype)
+  - CellType_proportion_by_sample.pdf (x = SAMPLE_COL, grouped by GROUP_COL, fill = subtype)
+
+These are already specified in @modules/celltype_subclustering.md Mode A endpoint section
+(lines 427-459). This rule exists to prevent them from being silently skipped.
+
+---
+
 ## Aesthetics and Color Preferences
 
 Canonical palettes are defined in @context/color_palettes.md.
@@ -119,6 +152,36 @@ each project's `context_defaults.palettes` block in validated_examples.yaml.
 
 The deployment agent should never hardcode project-specific color vectors in a
 shared module or pipeline file. Always reference palettes via context injection.
+
+---
+
+## Cross-Dataset Comparison Conventions
+
+When comparing in-house (WCM) data against a public atlas (e.g. Tabula Sapiens):
+
+### Column ordering in cross-dataset dotplots
+
+**Rule:** In-house data ALWAYS appears on the LEFT, atlas data on the RIGHT.
+
+Implement by setting SOURCES_ORDER in @modules/cross_dataset_dotplot.md:
+  SOURCES_ORDER <- c("inhouse_label", "atlas_label")
+
+The in-house label (e.g. "WCM", "inhouse_thyroid") must be the first element.
+This rule applies regardless of cell count -- do not let the atlas dominate column
+order simply because it has more cells.
+
+### Depth correction requirement
+
+Cross-dataset dotplots MUST use within-dataset z-scoring (depth correction) per
+@modules/cross_dataset_dotplot.md Part B. Never combine raw avg_exp across datasets
+without z-scoring first -- atlas cells typically have higher absolute expression
+values due to sequencing depth differences.
+
+### Required module
+
+All cross-dataset dotplots use @modules/cross_dataset_dotplot.md.
+Never call DotPlot(group.by="organ") directly across datasets -- this skips depth
+correction and destroys column ordering.
 
 ---
 
