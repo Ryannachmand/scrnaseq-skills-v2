@@ -789,6 +789,197 @@ make_pathway_barplot <- function(markers, comp, subset_name, universe_genes,
 
 ---
 
+## make_pathway_barplot_msig — Hallmark + Reactome variant
+
+Use this when the brief specifies Hallmark + Reactome (msigdbr) enrichment.
+The canonical make_pathway_barplot() above uses GO:BP via enrichGO. If you
+need Hallmark and/or Reactome, call make_pathway_barplot_msig() instead.
+Do not write a third inline implementation.
+
+```r
+make_pathway_barplot_msig <- function(markers, comp, subset_name, universe_genes,
+                                       n_pathways = N_PATHWAYS, output_file,
+                                       flagged_keywords = NULL) {
+  sig_df    <- markers %>%
+    filter(p_val_adj < PADJ_CUT, abs(avg_log2FC) > LFC_CUT, !is_ambient(gene))
+  genes_up1 <- sig_df %>% filter(avg_log2FC >  0) %>% pull(gene)
+  genes_up2 <- sig_df %>% filter(avg_log2FC <= 0) %>% pull(gene)
+
+  # Build TERM2GENE from msigdbr (Hallmark H + Reactome C2)
+  msig_h  <- msigdbr(species = "Homo sapiens", category = "H") %>%
+    dplyr::select(gs_name, gene_symbol)
+  msig_r  <- msigdbr(species = "Homo sapiens", category = "C2",
+                     subcategory = "CP:REACTOME") %>%
+    dplyr::select(gs_name, gene_symbol)
+  term2gene <- bind_rows(msig_h, msig_r) %>% distinct()
+
+  run_ora <- function(genes, dir_label) {
+    if (length(genes) < 5) return(NULL)
+    res <- enricher(
+      gene          = genes,
+      universe      = universe_genes,
+      TERM2GENE     = term2gene,
+      pAdjustMethod = "BH",
+      pvalueCutoff  = 0.05,
+      qvalueCutoff  = 0.2,
+      minGSSize     = 10,
+      maxGSSize     = 500
+    )
+    if (is.null(res) || nrow(res@result) == 0) return(NULL)
+    as.data.frame(res) %>%
+      filter(p.adjust < 0.05) %>%
+      arrange(p.adjust) %>%
+      slice_head(n = n_pathways) %>%
+      mutate(direction = dir_label)
+  }
+
+  res_all <- bind_rows(run_ora(genes_up1, comp$ident1),
+                       run_ora(genes_up2, comp$ident2))
+
+  if (is.null(res_all) || nrow(res_all) == 0) {
+    message(sprintf("No significant pathways for %s -- barplot skipped", comp$label))
+    return(NULL)
+  }
+
+  res_all <- res_all %>%
+    mutate(
+      neg_log_p  = -log10(p.adjust),
+      x_val      = ifelse(direction == comp$ident2, neg_log_p, -neg_log_p),
+      dot_x      = x_val * 1.03,
+      label_desc = ifelse(nchar(Description) > 55,
+                          paste0(substr(Description, 1, 52), "..."), Description),
+      label_desc = gsub("_", " ", label_desc),
+      top_genes  = sapply(strsplit(geneID, "/"), function(g) paste(head(g, 5), collapse = ", ")),
+      text_x     = ifelse(x_val >= 0,
+                          dot_x + max(abs(x_val)) * 0.03,
+                          max(abs(x_val)) * 0.03),
+      text_hjust = 0,
+      gene_text  = sprintf("n=%d  %s", Count, top_genes),
+      flagged    = if (!is.null(flagged_keywords))
+                     grepl(flagged_keywords, tolower(Description))
+                   else
+                     FALSE
+    ) %>%
+    arrange(x_val) %>%
+    mutate(label_desc = factor(label_desc, levels = unique(label_desc)))
+
+  max_x <- max(abs(res_all$x_val))
+  dir_colors <- setNames(c("#B2182B", "#2166AC"), c(comp$ident1, comp$ident2))
+
+  p <- ggplot(res_all, aes(x = x_val, y = label_desc)) +
+    geom_col(aes(fill = direction), width = 0.55, alpha = 0.82) +
+    geom_vline(xintercept = 0, color = "grey25", linewidth = 0.55) +
+    geom_vline(xintercept = c(-log10(0.05), log10(0.05)),
+               color = "grey55", linewidth = 0.35, linetype = "dashed") +
+    geom_point(aes(x = dot_x, fill = direction, size = Count),
+               shape = 21, color = "grey20", stroke = 0.3, alpha = 0.95) +
+    geom_text(aes(x = text_x, label = gene_text, hjust = text_hjust),
+              size = 3.5, fontface = "italic", color = "grey25", lineheight = 0.9) +
+    geom_text(data = res_all %>% filter(flagged),
+              aes(x = 0, y = label_desc, label = "*"),
+              inherit.aes = FALSE, size = 5, color = "darkred", hjust = 0.5) +
+    scale_fill_manual(values = dir_colors, name = "Enriched in") +
+    scale_size_continuous(name = "Gene count", range = c(2, 8)) +
+    scale_x_continuous(
+      name   = expression(-log[10](p[adj])),
+      labels = function(x) abs(round(x, 1)),
+      expand = expansion(mult = c(0.02, 0.45))
+    ) +
+    labs(title = sprintf("%s | %s\nHallmark + Reactome Pathway Enrichment",
+                         subset_name, gsub("_", " ", comp$label)),
+         y = NULL) +
+    theme_classic(base_size = 14) +
+    theme(
+      axis.text.y        = element_text(size = 12),
+      axis.text.x        = element_text(size = 13),
+      axis.title.x       = element_text(size = 14, face = "bold"),
+      axis.line.y        = element_blank(),
+      axis.ticks.y       = element_blank(),
+      panel.grid.major.x = element_line(color = "grey92", linewidth = 0.3),
+      legend.position    = "right",
+      plot.title         = element_text(hjust = 0.5, size = 15, face = "bold",
+                                        lineheight = 1.2),
+      plot.margin        = margin(t = 18, r = 10, b = 10, l = 10)
+    ) +
+    coord_cartesian(clip = "off")
+
+  n_bars <- nrow(res_all)
+  ggsave(output_file, plot = p, width = 15, height = max(4, n_bars * 0.28 + 2),
+         units = "in", device = "pdf", useDingbats = FALSE)
+  message(sprintf("Pathway barplot: %d pathways, file: %s", n_bars, basename(output_file)))
+  invisible(p)
+}
+```
+
+Function signature mirrors make_pathway_barplot(): markers data frame with
+columns gene/avg_log2FC/p_val_adj, comp list with label/ident1/ident2,
+subset_name, universe_genes, n_pathways, output_file. The flagged_keywords
+argument accepts a regex of pathway-name patterns to highlight with the
+asterisk (e.g. "angiogenesis|immune|chemokine|ECM|remodeling|vascular|
+cytokine|integrin|hypoxia").
+
+---
+
+## make_module_score_violin — per-subcluster module score violin
+
+Canonical recipe for AddModuleScore visualization. Use this when showing
+module score distributions across cell subtypes (e.g. EC subclusters)
+with comparison between conditions or groups.
+
+CRITICAL: x-axis is the subtype/subcluster column, fill is the comparison
+column (Condition or Group). Do NOT put Condition or Group on the x-axis
+-- that collapses the per-subtype dimension and loses the comparison
+the plot is meant to show.
+
+```r
+# Module score violin: per-subtype breakdown, fill by condition or group.
+#
+# Args:
+#   meta_df: data frame with at minimum subtype_col, fill_col, and score_col
+#   score_col: name of the column containing the module score (numeric)
+#   subtype_col: name of the column containing the subtype/subcluster labels
+#                (this becomes the x-axis)
+#   fill_col: name of the column containing the comparison variable
+#             (this becomes the fill aesthetic -- typically Condition or Group)
+#   fill_colors: named character vector of colors keyed by fill_col levels
+#   output_file: PDF path
+#   title: plot title (optional)
+make_module_score_violin <- function(meta_df, score_col, subtype_col, fill_col,
+                                     fill_colors, output_file,
+                                     title = NULL) {
+  df <- meta_df[, c(subtype_col, fill_col, score_col)]
+  colnames(df) <- c("subtype", "fill_var", "score")
+
+  n_sub <- length(unique(df$subtype))
+  fig_w <- max(n_sub * 0.75 + 3, 6)
+
+  p <- ggplot(df, aes(x = subtype, y = score, fill = fill_var)) +
+    geom_violin(scale = "width", trim = TRUE, linewidth = 0.3, alpha = 0.8) +
+    geom_boxplot(width = 0.05, outlier.shape = NA, fill = "white", linewidth = 0.2) +
+    scale_fill_manual(values = fill_colors) +
+    labs(title = title, x = NULL, y = "Module Score", fill = NULL) +
+    theme_classic(base_size = 13) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 11))
+
+  ggsave(output_file, plot = p,
+         width = fig_w, height = 5,
+         device = "pdf", useDingbats = FALSE)
+  invisible(p)
+}
+```
+
+When calling with Condition as the fill, provide a 2-level color vector
+(e.g. c(Normal = "#4477AA", Tumor = "#EE6677")). When calling with Group
+as the fill, provide a 5-level color vector (Normal, PTC-FV, PTC-CT,
+HCC, ATC). Project-specific color palettes should live in
+context/lab_context.md or context/color_palettes.md as named vectors.
+
+Always produce a separate plot per comparison axis: one violin grid
+faceted on subtype with Condition fill, one with Group fill. Do not
+combine them into a single plot.
+
+---
+
 ## Adapter: make_pathway_barplot() for one-directional (signature) gene lists
 
 When the input is a pre-filtered gene list rather than a bidirectional DE result,
@@ -835,8 +1026,12 @@ threshold lines, directional labels, coord_cartesian clip-off) is applied even f
 one-directional use cases. The ident2 bars will be absent (no negative genes in the
 synthetic markers) but the ident1 bars will carry all the patched visual layers.
 
-Do NOT write an inline ggplot pathway barplot. If the function signature doesn't fit,
-use this adapter rather than reinventing.
+Do NOT write an inline ggplot pathway barplot. Route to one of:
+- make_pathway_barplot() for GO:BP (enrichGO-based; gene ontology biological process)
+- make_pathway_barplot_msig() for Hallmark and/or Reactome (msigdbr-based)
+- the one-directional adapter below if the input is a pre-filtered signature
+  gene list rather than a bidirectional DE result
+If none of these signatures fit, use the adapter rather than reinventing.
 
 ---
 
