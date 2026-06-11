@@ -471,6 +471,11 @@ make_functional_heatmap <- function(so_obj, markers, comp, subset_name,
 
 ## Step 5: Top-Gene Dot Plot
 
+**Ordering rule:** columns (subtypes on x-axis) sorted alphabetically. Genes sorted diagonally
+within each DE-direction group (up-in-ident1 and up-in-ident2 separately): genes peaking in the
+leftmost subtype column appear at top; within each peak-column group, sorted by peak intensity
+descending; ties broken alphabetically. See full ordering rule in `@primitives/visualization.md`.
+
 ```r
 make_topgene_dotplot <- function(so_obj, markers, comp, subset_name,
                                   label_col,       # metadata column for subtype labels
@@ -500,11 +505,37 @@ make_topgene_dotplot <- function(so_obj, markers, comp, subset_name,
     ) %>%
     group_by(gene) %>%
     mutate(avg_exp_scaled = pmax(pmin(scale(avg_exp)[, 1], 2.5), -2.5)) %>%
-    ungroup() %>%
-    mutate(gene = factor(gene, levels = rev(gene_order)))
+    ungroup()
+
+  # Sort subtype columns alphabetically
+  subtypes_sorted <- sort(unique(as.character(dot_df$subtype_var)))
+  dot_df$subtype_var <- factor(dot_df$subtype_var, levels = subtypes_sorted)
+
+  # Diagonal gene ordering within each DE-direction group
+  avg_wide <- tapply(dot_df$avg_exp_scaled,
+                     list(as.character(dot_df$gene), as.character(dot_df$subtype_var)),
+                     mean)
+  avg_wide <- avg_wide[, subtypes_sorted, drop = FALSE]
+  avg_wide[is.na(avg_wide)] <- 0
+  up1_in <- top_up1[top_up1 %in% rownames(avg_wide)]
+  if (length(up1_in) > 0) {
+    m <- avg_wide[up1_in, , drop = FALSE]
+    pg <- subtypes_sorted[max.col(m, ties.method = "first")]
+    pv <- m[cbind(seq_len(nrow(m)), max.col(m, ties.method = "first"))]
+    up1_in <- up1_in[order(match(pg, subtypes_sorted), -pv, up1_in)]
+  }
+  up2_in <- top_up2[top_up2 %in% rownames(avg_wide)]
+  if (length(up2_in) > 0) {
+    m <- avg_wide[up2_in, , drop = FALSE]
+    pg <- subtypes_sorted[max.col(m, ties.method = "first")]
+    pv <- m[cbind(seq_len(nrow(m)), max.col(m, ties.method = "first"))]
+    up2_in <- up2_in[order(match(pg, subtypes_sorted), -pv, up2_in)]
+  }
+  gene_order_new <- c(up1_in, up2_in)
+  dot_df$gene <- factor(dot_df$gene, levels = rev(gene_order_new))
 
   n_subtypes <- length(unique(dot_df$subtype_var))
-  n_genes    <- length(gene_order)
+  n_genes    <- length(gene_order_new)
 
   p <- ggplot(dot_df, aes(x = subtype_var, y = gene, size = pct_exp, fill = avg_exp_scaled)) +
     geom_point(shape = 21, color = "grey30", stroke = 0.32) +
@@ -570,23 +601,26 @@ make_functional_dotplot <- function(so_obj, markers, comp, subset_name,
     mutate(avg_exp_scaled = pmax(pmin(scale(avg_exp)[, 1], 2.5), -2.5)) %>%
     ungroup()
 
-  # Build wide expression matrix: rows = genes, cols = group:subtype combinations
-  clust_wide <- dot_df %>%
-    filter(gene %in% gene_order) %>%
-    mutate(col_id = paste(group_var, subtype_var, sep = ":")) %>%
-    select(gene, col_id, avg_exp_scaled) %>%
-    pivot_wider(names_from = col_id, values_from = avg_exp_scaled, values_fill = 0)
-  clust_mat_m <- as.matrix(clust_wide[, -1])
-  rownames(clust_mat_m) <- as.character(clust_wide$gene)
+  # Sort subtype columns alphabetically
+  subtypes_sorted <- sort(unique(as.character(dot_df$subtype_var)))
+  dot_df$subtype_var <- factor(dot_df$subtype_var, levels = subtypes_sorted)
 
-  # Rebuild section_df with clustered gene order within each section
+  # Build subtype-level avg expression matrix for diagonal gene ordering within sections
+  avg_by_subtype <- tapply(dot_df$avg_exp_scaled,
+                           list(as.character(dot_df$gene), as.character(dot_df$subtype_var)),
+                           mean)
+  avg_by_subtype <- avg_by_subtype[, subtypes_sorted, drop = FALSE]
+  avg_by_subtype[is.na(avg_by_subtype)] <- 0
+
+  # Gene order within each section: diagonal (peak subtype, peak intensity desc, then alpha)
   section_df <- bind_rows(lapply(names(functional_gene_sets), function(s) {
     g <- as.character(functional_gene_sets[[s]])
-    g <- g[g %in% rownames(clust_mat_m)]
-    if (length(g) > 2) {
-      hc <- hclust(dist(clust_mat_m[g, , drop = FALSE], method = "euclidean"),
-                   method = "ward.D2")
-      g  <- g[hc$order]
+    g <- g[g %in% rownames(avg_by_subtype)]
+    if (length(g) > 0) {
+      mat_s <- avg_by_subtype[g, , drop = FALSE]
+      pg    <- subtypes_sorted[max.col(mat_s, ties.method = "first")]
+      pv    <- mat_s[cbind(seq_len(nrow(mat_s)), max.col(mat_s, ties.method = "first"))]
+      g     <- g[order(match(pg, subtypes_sorted), -pv, g)]
     }
     data.frame(gene = g, section = s, stringsAsFactors = FALSE)
   })) %>% distinct(gene, .keep_all = TRUE)

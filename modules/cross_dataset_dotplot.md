@@ -278,7 +278,9 @@ dot_atlas <- dot_long %>%
 dot_all <- bind_rows(dot_inhouse, dot_atlas) %>%
   mutate(avg_exp_z = pmax(pmin(avg_exp_z, Z_CAP), -Z_CAP))   # cap at ±Z_CAP
 
-# Column order: sources in SOURCES_ORDER, subtypes alphabetical within each source
+# Column order: sources in SOURCES_ORDER, subtypes alphabetical within each source.
+# NOTE: Intentionally not purely alphabetical — SOURCES_ORDER governs source grouping.
+# This is the documented exception to the global alphabetical-column rule in visualization.md.
 # Handle whitespace in subtype names: column_order uses group_label (source + subtype)
 dot_all$col_id <- paste0(dot_all[[SOURCE_COL]], " ", dot_all[[SUBTYPE_COL]])
 
@@ -286,7 +288,8 @@ col_labels <- sort(unique(dot_all$col_id))
 col_order  <- col_labels[order(match(sub(" .*", "", col_labels), SOURCES_ORDER))]
 # If col_order still has whitespace issues after CSV round-trip, apply gsub("\\.", " ", ...)
 
-# Gene (row) order: section membership from marker_genes, apply FORCE_GENES_SEC1 if set
+# Gene (row) order: section membership from marker_genes, apply FORCE_GENES_SEC1 if set.
+# NOTE: Gene order is caller-specified via marker_genes — diagonal ordering does not apply here.
 section_df <- bind_rows(lapply(names(marker_genes), function(s) {
   genes <- if (s == names(marker_genes)[1] && !is.null(FORCE_GENES_SEC1)) {
     unique(c(FORCE_GENES_SEC1, marker_genes[[s]]))   # forced genes prepended to Section 1

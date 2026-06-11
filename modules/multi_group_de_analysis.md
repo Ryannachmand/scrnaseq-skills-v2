@@ -274,9 +274,8 @@ make_anatomical_dotplot <- function(so_obj, markers, comp, subset_name,
 
   # Enforce group ordering — all N panels appear in canonical order
   dot_df$group_var <- factor(dot_df$group_var, levels = groups)
-  dot_df$gene      <- factor(dot_df$gene, levels = rev(gene_order))
 
-  # Apply label_order to filter and order cell types on x-axis
+  # Apply label_order to filter and order cell types on x-axis (alphabetical when NULL)
   ct_present <- if (!is.null(label_order)) {
     intersect(label_order, unique(dot_df$subtype_var))
   } else {
@@ -284,6 +283,30 @@ make_anatomical_dotplot <- function(so_obj, markers, comp, subset_name,
   }
   dot_df$subtype_var <- factor(dot_df$subtype_var, levels = ct_present)
   dot_df <- dot_df %>% filter(!is.na(subtype_var))
+
+  # Diagonal gene ordering within each DE-direction group (uses x-axis column order for peak)
+  avg_wide <- tapply(dot_df$avg_exp_scaled,
+                     list(as.character(dot_df$gene), as.character(dot_df$subtype_var)),
+                     mean)
+  avg_wide <- avg_wide[, ct_present[ct_present %in% colnames(avg_wide)], drop = FALSE]
+  avg_wide[is.na(avg_wide)] <- 0
+  ct_ref <- colnames(avg_wide)
+  up1_in <- top_up1[top_up1 %in% rownames(avg_wide)]
+  if (length(up1_in) > 0) {
+    m <- avg_wide[up1_in, , drop = FALSE]
+    pg <- ct_ref[max.col(m, ties.method = "first")]
+    pv <- m[cbind(seq_len(nrow(m)), max.col(m, ties.method = "first"))]
+    up1_in <- up1_in[order(match(pg, ct_ref), -pv, up1_in)]
+  }
+  up2_in <- top_up2[top_up2 %in% rownames(avg_wide)]
+  if (length(up2_in) > 0) {
+    m <- avg_wide[up2_in, , drop = FALSE]
+    pg <- ct_ref[max.col(m, ties.method = "first")]
+    pv <- m[cbind(seq_len(nrow(m)), max.col(m, ties.method = "first"))]
+    up2_in <- up2_in[order(match(pg, ct_ref), -pv, up2_in)]
+  }
+  gene_order_new <- c(up1_in, up2_in)
+  dot_df$gene <- factor(dot_df$gene, levels = rev(gene_order_new))
 
   axis_colors <- if (!is.null(label_colors)) {
     cols <- label_colors[ct_present]
@@ -295,8 +318,8 @@ make_anatomical_dotplot <- function(so_obj, markers, comp, subset_name,
 
   n_groups   <- length(groups)
   n_subtypes <- length(ct_present)
-  n_genes    <- length(gene_order)
-  divider_y  <- length(top_up2) + 0.5
+  n_genes    <- length(gene_order_new)
+  divider_y  <- length(up2_in) + 0.5
 
   p <- ggplot(dot_df, aes(x = subtype_var, y = gene, size = pct_exp, fill = avg_exp_scaled)) +
     geom_point(shape = 21, color = "grey30", stroke = 0.32) +
@@ -525,10 +548,29 @@ make_go_functional_dotplot <- function(so_obj, scope_markers, scope_name,
     group_by(gene) %>%
     mutate(avg_exp_scaled = pmax(pmin(scale(avg_exp)[, 1], 2.5), -2.5)) %>%
     ungroup() %>%
-    mutate(gene        = factor(gene, levels = rev(gene_order)),
-           group_var   = factor(group_var, levels = groups),
+    mutate(group_var   = factor(group_var, levels = groups),
            subtype_var = factor(subtype_var, levels = ct_present)) %>%
     filter(!is.na(subtype_var))
+
+  # Diagonal gene ordering within each GO section (preserves gene selection; changes within-section order)
+  avg_by_subtype <- tapply(dot_df$avg_exp_scaled,
+                           list(as.character(dot_df$gene), as.character(dot_df$subtype_var)),
+                           mean)
+  ct_ref <- ct_present[ct_present %in% colnames(avg_by_subtype)]
+  avg_by_subtype <- avg_by_subtype[, ct_ref, drop = FALSE]
+  avg_by_subtype[is.na(avg_by_subtype)] <- 0
+  gene_order <- unlist(lapply(top_terms, function(s) {
+    g <- gene_order[gene_order %in% gene_to_term$gene[gene_to_term$section == s]]
+    if (length(g) > 0) {
+      mat_s <- avg_by_subtype[g, , drop = FALSE]
+      pg    <- ct_ref[max.col(mat_s, ties.method = "first")]
+      pv    <- mat_s[cbind(seq_len(nrow(mat_s)), max.col(mat_s, ties.method = "first"))]
+      g     <- g[order(match(pg, ct_ref), -pv, g)]
+    }
+    g
+  }))
+
+  dot_df <- dot_df %>% mutate(gene = factor(gene, levels = rev(gene_order)))
 
   n_groups   <- length(groups)
   n_subtypes <- length(ct_present)

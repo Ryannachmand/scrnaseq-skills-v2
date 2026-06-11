@@ -178,6 +178,14 @@ placement between groups of x values -- it does NOT control what the x-axis repr
 General-purpose dot plot with shape=21 (filled circle), size=pct_exp, fill=avg_exp_scaled.
 Replaces the v1 "EC Functional Dot Plot" — no EC-specific assumptions.
 
+**Ordering rule (applied inside every dotplot function):** columns are sorted alphabetically
+(ascending, case-sensitive). Genes/rows are sorted diagonally: the gene peaking in the
+leftmost column appears at top, successive peaks appear lower. Within each peak-column group,
+genes are sorted by peak intensity descending; ties broken by gene name alphabetically. When a
+function has gene sections (e.g., functional gene sets), diagonal sort is applied within each
+section independently. Functions with an explicit `label_order` parameter respect the
+caller-supplied order; the alphabetical default applies only when `label_order` is NULL.
+
 ```r
 make_canonical_dotplot <- function(dot_df,
                                    gene_col     = "gene",
@@ -195,6 +203,19 @@ make_canonical_dotplot <- function(dot_df,
   # section_labels: optional df for geom_text labels pinned to one facet (avoids annotate() in facets)
   n_genes  <- if (is.null(n_genes))  length(unique(dot_df[[gene_col]]))   else n_genes
   n_groups <- if (is.null(n_groups)) length(unique(dot_df[[group_col]])) else n_groups
+
+  # Sort columns alphabetically; order genes diagonally (peak column → peak value desc → alpha)
+  groups_sorted <- sort(unique(as.character(dot_df[[group_col]])))
+  dot_df[[group_col]] <- factor(dot_df[[group_col]], levels = groups_sorted)
+  avg_wide <- tapply(dot_df[[avg_col]],
+                     list(as.character(dot_df[[gene_col]]), as.character(dot_df[[group_col]])),
+                     mean)
+  avg_wide <- avg_wide[, groups_sorted, drop = FALSE]
+  avg_wide[is.na(avg_wide)] <- 0
+  peak_col  <- groups_sorted[max.col(avg_wide, ties.method = "first")]
+  peak_val  <- avg_wide[cbind(seq_len(nrow(avg_wide)), max.col(avg_wide, ties.method = "first"))]
+  gene_order_diag <- rownames(avg_wide)[order(match(peak_col, groups_sorted), -peak_val, rownames(avg_wide))]
+  dot_df[[gene_col]] <- factor(dot_df[[gene_col]], levels = rev(gene_order_diag))
 
   p <- ggplot(dot_df, aes_string(x = group_col, y = gene_col,
                                   size = pct_col, fill = avg_col)) +
@@ -273,6 +294,19 @@ make_tf_diamond_plot <- function(dot_df, gene_col = "gene", group_col = "group",
   # - gene names italic on y-axis
   n_genes  <- if (is.null(n_genes))  length(unique(dot_df[[gene_col]]))   else n_genes
   n_groups <- if (is.null(n_groups)) length(unique(dot_df[[group_col]])) else n_groups
+
+  # Sort columns alphabetically; order genes diagonally (peak column → peak LFC desc → alpha)
+  groups_sorted <- sort(unique(as.character(dot_df[[group_col]])))
+  dot_df[[group_col]] <- factor(dot_df[[group_col]], levels = groups_sorted)
+  lfc_wide <- tapply(dot_df[[lfc_col]],
+                     list(as.character(dot_df[[gene_col]]), as.character(dot_df[[group_col]])),
+                     mean)
+  lfc_wide <- lfc_wide[, groups_sorted, drop = FALSE]
+  lfc_wide[is.na(lfc_wide)] <- 0
+  peak_col  <- groups_sorted[max.col(lfc_wide, ties.method = "first")]
+  peak_val  <- lfc_wide[cbind(seq_len(nrow(lfc_wide)), max.col(lfc_wide, ties.method = "first"))]
+  gene_order_diag <- rownames(lfc_wide)[order(match(peak_col, groups_sorted), -peak_val, rownames(lfc_wide))]
+  dot_df[[gene_col]] <- factor(dot_df[[gene_col]], levels = rev(gene_order_diag))
 
   p <- ggplot(dot_df, aes_string(x = group_col, y = gene_col,
                                   size = pct_col, fill = lfc_col)) +

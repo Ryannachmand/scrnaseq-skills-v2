@@ -292,7 +292,7 @@ Direct gene-expression evidence; does NOT use AUC scores.
 
 ```r
 make_evidence_dotplot <- function(seurat_obj, gene_sets, group_col, output_path) {
-  group_levels <- unique(seurat_obj@meta.data[[group_col]])
+  group_levels <- sort(unique(seurat_obj@meta.data[[group_col]]))
   expr_mat <- GetAssayData(seurat_obj, layer = "data")
 
   rows <- lapply(names(gene_sets), function(pw) {
@@ -310,9 +310,20 @@ make_evidence_dotplot <- function(seurat_obj, gene_sets, group_col, output_path)
     })
   })
 
-  dot_df <- bind_rows(unlist(rows, recursive = FALSE)) %>%
-    mutate(pathway = factor(pathway, levels = rev(names(gene_sets))),
-           group   = factor(group, levels = group_levels))
+  dot_df <- bind_rows(unlist(rows, recursive = FALSE))
+
+  # Sort groups alphabetically; order pathways diagonally (peak group → peak mean_expr desc → alpha)
+  groups_sorted <- sort(unique(as.character(dot_df$group)))
+  dot_df$group <- factor(dot_df$group, levels = groups_sorted)
+  pw_wide <- tapply(dot_df$mean_expr,
+                    list(as.character(dot_df$pathway), as.character(dot_df$group)),
+                    mean)
+  pw_wide <- pw_wide[, groups_sorted, drop = FALSE]
+  pw_wide[is.na(pw_wide)] <- 0
+  peak_col <- groups_sorted[max.col(pw_wide, ties.method = "first")]
+  peak_val <- pw_wide[cbind(seq_len(nrow(pw_wide)), max.col(pw_wide, ties.method = "first"))]
+  pw_order <- rownames(pw_wide)[order(match(peak_col, groups_sorted), -peak_val, rownames(pw_wide))]
+  dot_df$pathway <- factor(dot_df$pathway, levels = rev(pw_order))
 
   PALETTE_EXPRESSION <- c("#F5F5F5","#FFF9C4","#FFB300","#E53935")
 
