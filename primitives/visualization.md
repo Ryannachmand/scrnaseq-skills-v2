@@ -200,6 +200,7 @@ make_canonical_dotplot <- function(dot_df,
                                   size = pct_col, fill = avg_col)) +
     geom_point(shape = 21, color = "grey30", stroke = 0.32) +
     scale_fill_gradientn(colors = c("#F5F5F5", "#FFF9C4", "#FFB300", "#E53935"),
+                         limits = c(-2.5, 2.5), oob = scales::squish,
                          name = "Scaled\nExpression") +
     scale_size_continuous(range = c(0.3, 6), limits = c(0, 100),
                           breaks = c(10, 25, 50, 75),

@@ -498,10 +498,10 @@ make_topgene_dotplot <- function(so_obj, markers, comp, subset_name,
       pct_exp = mean(expression > 0) * 100,
       .groups = "drop"
     ) %>%
-    mutate(
-      avg_exp_scaled = scale(avg_exp)[, 1],
-      gene = factor(gene, levels = rev(gene_order))
-    )
+    group_by(gene) %>%
+    mutate(avg_exp_scaled = pmax(pmin(scale(avg_exp)[, 1], 2.5), -2.5)) %>%
+    ungroup() %>%
+    mutate(gene = factor(gene, levels = rev(gene_order)))
 
   n_subtypes <- length(unique(dot_df$subtype_var))
   n_genes    <- length(gene_order)
@@ -509,7 +509,8 @@ make_topgene_dotplot <- function(so_obj, markers, comp, subset_name,
   p <- ggplot(dot_df, aes(x = subtype_var, y = gene, size = pct_exp, fill = avg_exp_scaled)) +
     geom_point(shape = 21, color = "grey30", stroke = 0.32) +
     facet_wrap(~ group_var, ncol = length(unique(dot_df$group_var)), scales = "free_x") +
-    scale_fill_gradientn(colors = c("#F5F5F5", "#FFF9C4", "#FFB300", "#E53935")) +
+    scale_fill_gradientn(colors = c("#F5F5F5", "#FFF9C4", "#FFB300", "#E53935"),
+                         limits = c(-2.5, 2.5), oob = scales::squish) +
     scale_size_continuous(range = c(0.3, 6), limits = c(0, 100)) +
     scale_x_discrete(position = "top") +
     geom_hline(yintercept = n_each + 0.5, linetype = "dashed", color = "grey40", linewidth = 0.4) +
@@ -565,7 +566,9 @@ make_functional_dotplot <- function(so_obj, markers, comp, subset_name,
     group_by(group_var, subtype_var, gene) %>%
     summarise(avg_exp = mean(expm1(expression)),
               pct_exp = mean(expression > 0) * 100, .groups = "drop") %>%
-    mutate(avg_exp_scaled = scale(avg_exp)[, 1])
+    group_by(gene) %>%
+    mutate(avg_exp_scaled = pmax(pmin(scale(avg_exp)[, 1], 2.5), -2.5)) %>%
+    ungroup()
 
   # Build wide expression matrix: rows = genes, cols = group:subtype combinations
   clust_wide <- dot_df %>%
@@ -616,7 +619,8 @@ make_functional_dotplot <- function(so_obj, markers, comp, subset_name,
   p <- ggplot(dot_df, aes(x = subtype_var, y = gene, size = pct_exp, fill = avg_exp_scaled)) +
     geom_point(shape = 21, color = "grey30", stroke = 0.32) +
     facet_wrap(~ group_var, ncol = n_groups, scales = "free_x") +
-    scale_fill_gradientn(colors = c("#F5F5F5", "#FFF9C4", "#FFB300", "#E53935")) +
+    scale_fill_gradientn(colors = c("#F5F5F5", "#FFF9C4", "#FFB300", "#E53935"),
+                         limits = c(-2.5, 2.5), oob = scales::squish) +
     scale_size_continuous(range = c(0.3, 6), limits = c(0, 100)) +
     scale_x_discrete(position = "top") +
     geom_text(data = section_label_df,
