@@ -25,6 +25,7 @@ requires_context:
       - downstream_analyses.subclustering.broad_type_markers  # list of {broad_type: [genes]}
 references:
   - "@primitives/aesthetics.md"
+  - "@primitives/doublet_removal.md"
   - "@primitives/harmony_integration.md"
   - "@primitives/visualization.md"
   - "@primitives/seurat_v5_rules.md"
@@ -132,10 +133,19 @@ whole <- readRDS(RDS_IN)
 obj   <- subset(whole, subset = !!sym(LABEL_COL) %in% CELLTYPE_LABELS)
 rm(whole); gc()
 
-# -- RE-CLUSTER (see @primitives/harmony_integration.md for full recipe) ------
+# -- DOUBLET REMOVAL ON SUBSET ------------------------------------------------
+# scDblFinder requires raw counts; must run before normalization.
+# Reuses run_doublet_removal() from @primitives/doublet_removal.md.
+obj <- run_doublet_removal(obj, sample_col = SAMPLE_COL,
+                           output_dir = file.path(OUTPUT_DIR, "doublets/"))
+
+# -- RE-CLUSTER ON SUBSET -----------------------------------------------------
+# After subsetting, obj retains parent-object pca/harmony/umap embeddings for
+# these cells. ALL steps below OVERWRITE them with embeddings computed on just
+# this subset. Do NOT skip or reorder any step -- parent geometry will persist.
 obj <- NormalizeData(obj)
 obj <- FindVariableFeatures(obj, nfeatures = 2000)
-obj <- ScaleData(obj)
+obj <- ScaleData(obj, features = VariableFeatures(obj))
 obj <- RunPCA(obj, npcs = N_PCS)
 obj <- RunHarmony(obj, group.by.vars = BATCH_CORRECTION_VAR, reduction.use = "pca",
                   reduction.save = "harmony")
@@ -150,13 +160,15 @@ saveRDS(obj, RDS_OUT)
 ```r
 mac_clusters <- c("2", "4", "7")   # cluster IDs that are enriched for target subtype
 obj2 <- obj[, as.character(obj$seurat_clusters) %in% mac_clusters]
-# re-run NormalizeData -> RunUMAP as above
+# obj2 inherits pca/harmony/umap from obj. Re-run the FULL embedding pipeline:
+# NormalizeData -> FindVariableFeatures -> ScaleData(features=VariableFeatures) ->
+# RunPCA -> RunHarmony -> FindNeighbors -> FindClusters -> RunUMAP
 ```
 
 **If a contaminating cluster must be removed:**
 ```r
 obj3 <- obj2[, as.character(obj2$seurat_clusters) != "1"]
-# re-run NormalizeData -> RunUMAP
+# obj3 inherits embeddings from obj2. Re-run the full embedding pipeline (same steps as above).
 ```
 
 ---

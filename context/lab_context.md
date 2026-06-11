@@ -128,6 +128,20 @@ Expected EC subtype count: 6-10 for a typical multi-sample dataset. If FindClust
 returns > 12 clusters at the requested resolution, evaluate whether resolution should
 be lowered before proceeding with Mode A.
 
+### Subset embedding recompute
+
+Subclustering always recomputes variable features, PCA, Harmony, and UMAP on the
+cell-type subset. After `whole[, subset_cells]`, the resulting object retains
+parent-object pca/harmony/umap embeddings for those cells; the Step 1 re-cluster
+block in @modules/celltype_subclustering.md overwrites all of them.
+
+Doublet removal via run_doublet_removal() (@primitives/doublet_removal.md) runs
+on the subset BEFORE normalization, catching doublets that were not resolved in
+whole-object space.
+
+Plotting or caching a subsetted object before RunUMAP has completed on the subset
+will silently display parent-object geometry.
+
 ### Sample-cluster proportion barplot -- always required
 
 The labeled UMAP and the sample-cluster proportion barplot are ALWAYS produced as a pair.
