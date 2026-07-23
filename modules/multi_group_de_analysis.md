@@ -149,10 +149,9 @@ LABEL_COL  <- "project_specific"     # REPLACE: metadata column holding cell typ
 LABEL_ORDER <- NULL   # REPLACE: optional ordered character vector of cell type names
                        # e.g. c("TypeA", "TypeB", "TypeC")
                        # if NULL: cell types appear in alphabetical order on x-axis
-                       # TODO: the BoneMarrowStroma project references STROMA_ORDER (v1 lines 68, 107)
-                       #       but this vector is never defined in the v1 library.
-                       #       It must be curated and provided in the project examples/ file.
-                       #       See Phase 4 staging section at the bottom of this module.
+                       # NOTE: any project-specific ordered label vector (e.g. STROMA_ORDER,
+                       #       CELLTYPE_ORDER) must be defined in that project's examples/ file
+                       #       and passed in — the module does not hardcode label orderings.
 
 LABEL_COLORS <- NULL  # REPLACE: optional named color vector for x-axis label coloring
                        # e.g. c("TypeA" = "#E41A1C", "TypeB" = "#377EB8")

@@ -36,7 +36,7 @@ single-row multi-panel PDF. Matches native Seurat FeaturePlot behavior exactly
 
 ## Critical Gotchas — Do Not Repeat These Mistakes
 
-These were all debugged against CoCulture run output vs native FeaturePlot side-by-side.
+These were all debugged against real project output vs native FeaturePlot side-by-side.
 Each looked correct in isolation but produced visibly wrong output in comparison.
 
 | Wrong | Correct | Why |

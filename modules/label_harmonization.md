@@ -201,8 +201,9 @@ For heatmaps and cohort plots, create a derived `heatmap_label` column rather th
 modifying `unified_label`. Example: prepend "Cultured " and append "-like" suffix.
 Never modify `unified_label` for display purposes — create a separate column.
 
-*Note: specific examples of these patterns from the BoneMarrowStroma project are
-documented in examples/bone_marrow_stroma_label_harmonization.md (Phase 4 authoring).*
+*Note: worked examples of these harmonization patterns live in the
+examples/ directory; see any `*_label_harmonization.md` file for a
+project-specific application.*
 
 ---
 

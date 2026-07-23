@@ -35,7 +35,7 @@ Cell-cell communication analysis using CellChat v2 on a pre-annotated Seurat obj
 Six-script architecture: inference → basic plots → stacked bubbles → bar plots →
 circos diagrams → tissue comparison (conditional).
 
-**Validated on:** KidneyNew (2026-03-11) and HumanFat Interactions (2026-03-30).
+**Validated on:** two independent in-house projects (2026-Q1).
 Validated against up to 19 cell types, 104 pathways, and 16k+ LR interactions.
 
 **Never re-run inference for plotting iterations.** Script 1 produces the saved

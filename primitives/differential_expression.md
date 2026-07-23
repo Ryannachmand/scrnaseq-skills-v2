@@ -1008,8 +1008,9 @@ make_module_score_violin <- function(meta_df, score_col, subtype_col, fill_col,
 
 When calling with Condition as the fill, provide a 2-level color vector
 (e.g. c(Normal = "#4477AA", Tumor = "#EE6677")). When calling with Group
-as the fill, provide a 5-level color vector (Normal, PTC-FV, PTC-CT,
-HCC, ATC). Project-specific color palettes should live in
+as the fill, provide a named color vector with one entry per group level
+(e.g. c(GroupA = "#...", GroupB = "#...", GroupC = "#...")). The number of
+levels is project-specific. Project-specific color palettes should live in
 context/lab_context.md or context/color_palettes.md as named vectors.
 
 Always produce a separate plot per comparison axis: one violin grid
@@ -1037,25 +1038,25 @@ markers_synthetic <- data.frame(
 
 # Build synthetic comp object -- ident2 = NULL signals one-directional mode
 comp_synthetic <- list(
-  label  = "ThyroidEC_Signature",
-  ident1 = "inhouse_thyroid",      # REPLACE: the enriched direction label
-  ident2 = "other_organ",          # REPLACE: reference label (bars will be positive only)
+  label  = "CellType_Signature",
+  ident1 = "inhouse_condition",    # REPLACE: the enriched direction label
+  ident2 = "reference_condition",  # REPLACE: reference label (bars will be positive only)
   col    = "sig_group"
 )
 
 # dir_colors must be defined before calling make_pathway_barplot()
 dir_colors <- c(
-  "inhouse_thyroid" = "#4393C3",   # REPLACE: color for the enriched direction
-  "other_organ"     = "#878787"    # REPLACE: color for reference (no bars, used for labels only)
+  "inhouse_condition"   = "#4393C3",  # REPLACE: color for the enriched direction
+  "reference_condition" = "#878787"   # REPLACE: color for reference (no bars, used for labels only)
 )
 
 make_pathway_barplot(
-  markers       = markers_synthetic,
-  comp          = comp_synthetic,
-  subset_name   = "Thyroid EC",
+  markers        = markers_synthetic,
+  comp           = comp_synthetic,
+  subset_name    = "CellType_Subset",   # REPLACE: e.g. "EC", "Macrophage", etc.
   universe_genes = universe_genes,
-  n_pathways    = 15,
-  output_file   = "output/ec_organ_analysis/pathway/thyroid_EC_signature_pathway_barplot.pdf"
+  n_pathways     = 15,
+  output_file    = "output/<module>/pathway/<subset>_signature_pathway_barplot.pdf"  # REPLACE
 )
 ```
 
