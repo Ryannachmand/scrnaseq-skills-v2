@@ -26,3 +26,11 @@ __pycache__/
 
 # OS thumbnails
 Thumbs.db
+
+# Public release exclusions — internal development artifacts
+# and unpublished project examples not appropriate for the public repo.
+examples/private/
+archive/
+inventory/
+AUDIT_REPORT.md
+primitive_contamination_report.md
