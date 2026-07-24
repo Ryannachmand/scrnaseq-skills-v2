@@ -21,12 +21,12 @@ downstream_analyses:
   pyscenic:
     enabled: true
     label_col: mylabel              # EC subset label column
-    scenic_python_path: "/home/ryannachman/anaconda3/envs/scenicenv/bin/python"
+    scenic_python_path: "<YOUR_SCENICENV_PYTHON>"  # find with: conda run -n scenicenv which python
                                     # machine-specific path — confirm before running
-    database_dir: "/media/david/Mayo/ryan/scRNAseq/Sinusoid/GeneLists/"
+    database_dir: "<YOUR_PYSCENIC_DATABASE_DIR>"  # feather databases downloadable from aertslab GitHub
                                     # path to pySCENIC database files (rankings + motifs)
                                     # machine-specific — confirm before running
-    tf_list: "/home/ryannachman/scenicplus/scenicplus/resources/allTFs_hg38.txt"
+    tf_list: "<YOUR_TF_LIST_PATH>"  # allTFs_hg38.txt available from aertslab pySCENIC resources
                                     # human TF list for grn inference
                                     # machine-specific — confirm before running
     n_workers: 16                   # parallelization workers for pyscenic grn step

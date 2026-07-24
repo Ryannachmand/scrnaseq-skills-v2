@@ -45,9 +45,9 @@ All three are now `project_specific` sentinel values resolved from the brief.
 
 | v1 hardcoded | v2 brief field | Notes |
 |---|---|---|
-| `/media/david/Mayo/ryan/scRNAseq/Sinusoid/GeneLists/` | `database_dir` | Directory containing the hg38 feather ranking databases and motif annotation table |
-| `/home/ryannachman/scenicplus/scenicplus/resources/allTFs_hg38.txt` | `tf_list` | Path to TF list file. The pySCENIC install location is machine-specific. |
-| `/home/ryannachman/anaconda3/envs/scenicenv/bin/python` | `scenic_python_path` | Full path to the Python binary in the scenicenv conda environment. Use `conda run -n scenicenv which python` to find it on your machine. |
+| `<YOUR_PYSCENIC_DATABASE_DIR>` | `database_dir` | Directory containing the hg38 feather ranking databases and motif annotation table |
+| `<YOUR_TF_LIST_PATH>` | `tf_list` | Path to TF list file. The pySCENIC install location is machine-specific. |
+| `<YOUR_SCENICENV_PYTHON>` | `scenic_python_path` | Full path to the Python binary in the scenicenv conda environment. Use `conda run -n scenicenv which python` to find it on your machine. |
 
 ---
 
