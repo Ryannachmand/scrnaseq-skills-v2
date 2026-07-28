@@ -736,10 +736,3 @@ always use `so@meta.data$col <-` not `so$col <-`.
 
 ---
 
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-The following values are project-specific and must not appear in this module:
-
-- `examples/humanfat_mac_subclustering.md` -- CELLTYPE_LABELS for Macrophage/Monocyte subset,
-  adipose_type_colors palette, source_file as BATCH_CORRECTION_VAR and SAMPLE_COL,
-  tissue_type as GROUP_COL, validated 2026-03-24 cluster -> label mapping

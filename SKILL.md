@@ -53,24 +53,15 @@ Entry point for the deployment agent. Read this file first when generating any p
 │   └── integrate_public_data/
 │       ├── pipeline.md           ← 8-stage IntegratePublicData + Known-Atlas Convention
 │       └── brief_template.txt    ← v2 brief template for IntegratePublicData projects
-└── examples/                     ← project-specific instantiations (Phase 4 complete)
-    ├── humanfat_metabolic_profile.md
-    ├── humanfat_trajectory.md
-    ├── humanfat_pyscenic.md
-    ├── pparg_bulk_concordance.md
-    ├── humanfat_de_comprehensive.md
-    ├── humanfat_cellchat.md
-    ├── humanfat_mac_subclustering.md
-    ├── kidneynew_cellchat.md
-    ├── bone_marrow_stroma_cohort_plots.md
-    ├── bone_marrow_stroma_label_harmonization.md
-    ├── load_formats_bonemarrowstroma.md
-    ├── bonemarrow_3site_anatomical.md
+└── examples/                     ← project-specific instantiations (public subset)
+    ├── cellchat_example_A.md
+    ├── cohort_plots_example_A.md
+    ├── de_comprehensive_example_A.md
+    ├── ec_functional_gene_sets.md
+    ├── load_formats_example_A.md
     ├── tabula_sapiens_co_umap.md
     ├── tabula_sapiens_dotplot.md
-    ├── ec_functional_gene_sets.md
-    ├── coculture_feature_umap.md      ← skeleton
-    └── nkxspleen_bulk_lfc.md          ← skeleton
+    └── trajectory_example_A.md
 ```
 
 ---

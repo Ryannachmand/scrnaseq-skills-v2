@@ -711,25 +711,3 @@ Per scope (GO functional loop):
 
 Always add `limitsize = FALSE` to all `ggsave` calls. Plots taller than 50 in error without it.
 
----
-
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-`examples/bonemarrow_3site_anatomical.md` must define:
-
-- `GROUPS = c("Vertebrae", "Iliac Crest", "Femoral Head")` (the 3 anatomical sites)
-- `GROUP_COL = "site"`, `LABEL_COL = "unified_label"`
-- `STROMA_ORDER`: canonical ordered vector of bone marrow stromal cell type names.
-  This was referenced in v1 anatomical_de_analysis.md (lines 68 and 107) but **was never
-  defined** in any v1 library file. Must be curated from BoneMarrowStroma project records
-  before running `make_anatomical_dotplot`. Suggested entries: Adipo-MSC, APOD+ MSC,
-  Osteoblast — exact order pending confirmation.
-- `LABEL_COLORS`: named color vector keyed by `STROMA_ORDER` entries (undefined in v1;
-  must be created for the examples/ file)
-- `functional_gene_sets`: named list of bone marrow stromal gene sets (MSC fate,
-  osteogenic, adipogenic, fibro-inflammatory programs; biology-specific)
-- `GROUP_COLORS`: named vector for the 3 anatomical site values (for direction strip)
-- `comparisons`: 3 pairwise comparisons: GroupA_vs_GroupB, GroupA_vs_GroupC, GroupB_vs_GroupC
-- Validated run: BoneMarrowStroma, 2026-03-16
-- Validated script filenames: 1.5_AnatomicalComparison.R, 1.6_AnatomicalDE_CellTypeResolved.R,
-  1.7_SiteDE_GOFunctionalDotplot.R

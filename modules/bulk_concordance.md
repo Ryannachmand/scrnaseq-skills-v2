@@ -923,23 +923,3 @@ make_lfc_heatmap(file.path(OUTPUT_DIR, "LFC_Concordance_Heatmap.png"), w = hm_w,
 - **Garbled PDF title:** `EXPERIMENT_LABEL` must be ASCII-only — no em-dash, Unicode
   subscripts, or `≥`.
 
----
-
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-- `examples/pparg_bulk_concordance.md`:
-  - Mode 1 (signature_score) context: PPARG1_ROSI vs Control_ROSI HUVECs (DESeq2 output CSV path)
-  - HumanFat tissue color palette for 6 adipose depots (group_colors)
-  - EC subtype colors for 6 subtypes (subtype_colors)
-  - RibHighEC exclusion: EXCLUDE_SUBTYPES = c("RibHighEC") with rationale
-  - EC-biology TF list (~180 TFs: ETS, KLF/SP, SOX, FOX, nuclear receptors; Lambert 2018 basis)
-  - TARGET_TF assignment and resulting score column derivation
-  - Validated figure dimensions from 2026-03-12 run (6 subtypes × 6 tissues)
-
-- `examples/nkxspleen_bulk_lfc.md`:
-  - Mode 2 (parallel_lfc) context: NKXSpleen project (80,140 EC cells, 10 subtypes, 12 bulk samples,
-    6 Control / 6 NKX2-3 OE; validated 2026-03-13)
-  - biology_gene_sets for spleen EC biology: Chemokines, Adhesion Molecules, Angiocrine Factors,
-    ECM / Remodeling, Cell-type Markers (PLVAP, STAB2, KCNE3, SLCO2A1, KCNJ2, MRC1), TF Program
-  - Sample selection: 2-batch DESeq2 design, batch variable column name
-  - Validated concordance heatmap: ~25–30 genes, 4 scRNA-seq columns

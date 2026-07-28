@@ -512,6 +512,3 @@ redundant once the loom file exists.
   - NKXSpleen project paths and validated configuration
   - SUBTYPE_ORDER for spleen EC subtypes
   - Validated 317 regulons from KidneyNew run context
-- `examples/humanfat_pyscenic.md`:
-  - HumanFat EC subtype configuration, 6 subtypes, 320 regulons
-  - ec_subtype column mapping

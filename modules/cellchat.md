@@ -1213,57 +1213,7 @@ The following project-specific values appeared in the v1 source. They must be mo
 `examples/` files in Phase 4. Do NOT use these values in any generated R script without
 first confirming they match the current project state.
 
-### examples/kidneynew_cellchat.md (stage for Phase 4)
-
-Validated 2026-03-11 on the KidneyNew project.
-
-```
-LABEL_COL  <- "ec_subtype"          # or "ec_subtype_final" (post-annotation)
-ORGANISM   <- "human"
-INPUT_RDS  <- "project_specific"    # TODO: fill in from KidneyNew project records
-
-CT_ORDER (cell types in CellChat):
-  - EC subtypes: EC-GC, EC-AEA, EC-AVR, EC-DVR, EC-LYM, EC-PTC
-    (note: EC-PTC was added post-hoc via subclustering; CellChat object predates EC-PTC
-     and does not include it — see validated_examples.yaml KidneyNew notes)
-  - Non-EC: peritubular ECs, stroma, epithelial, MoMF
-    (exact values: TODO — confirm from project records)
-
-PATHWAY_CATEGORIES (KidneyNew example):
-  Chemokine_Adhesion:
-    label: "Chemokine & Adhesion"
-    grad_high: "#7B3FA0"
-    paths: PTPRM, PECAM1, CD99, ESAM, CDH5, CypA, GAP, MIF, MHC-II, ICAM, VCAM, ANNEXIN
-    chord_paths: PTPRM, PECAM1, CD99, ESAM, CDH5, GAP, MIF, CypA
-  Angiocrine:
-    label: "Angiocrine & Growth Factor"
-    grad_high: "#E53935"
-    paths: APP, EPHB, VEGF, NOTCH, SEMA6, ADGRG, EPHA, GDF, EDN, PDGF, PARs, Prostaglandin,
-           CALCR, ADGRL, Netrin, Cholesterol, PROS, GAS
-    chord_paths: EPHB, VEGF, NOTCH, SEMA6, ADGRG, EPHA, GDF, EDN
-    # APP excluded from chord_paths: total_prob ~0.139, ~5x next strongest (EPHB ~0.026)
-  ECM:
-    label: "Extracellular Matrix"
-    grad_high: "#3D70BE"
-    paths: COLLAGEN, LAMININ, SPP1, FN1, JAM, VISFATIN, ADGRE
-    chord_paths: COLLAGEN, LAMININ, SPP1, FN1, JAM, VISFATIN
-
-EC subtype color palette (from validated_examples.yaml KidneyNew entry):
-  EC-GC:    "#10B8F5"
-  EC-AEA:   "#ECA7A0"
-  EC-AVR:   "#A9B100"
-  EC-DVR:   "#36E2A6"
-  EC-LYM:   "#EFADFF"
-  EC-PTC:   "#4B6584"
-
-CELL_COLORS: EC subtypes (above) + non-EC types (TODO: confirm hex values from project)
-
-Note on ICAM/VCAM/integrin pathway placement:
-  ICAM, VCAM -> Chemokine_Adhesion (classical leukocyte adhesion)
-  Integrins binding non-ICAM/VCAM ECM ligands (SPP1, JAM, VISFATIN, FN1, ADGRE) -> ECM
-```
-
-### examples/humanfat_cellchat.md (stage for Phase 4)
+### examples/cellchat_example_A.md (stage for Phase 4)
 
 Validated 2026-03-30 (HumanFat Interactions run).
 

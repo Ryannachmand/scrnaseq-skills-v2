@@ -452,14 +452,3 @@ The `run_aucell()` primitive builds full cell rankings in memory. See Step 1.
 Gene sets with pseudo-notation (e.g. `"NDUFA1"-"NDUFA10"`) are NOT valid R. Always
 enumerate gene vectors explicitly. See examples/ for validated explicit gene lists.
 
----
-
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-- `examples/humanfat_metabolic_profile.md`:
-  - Five metabolic pathway gene sets (Glycolysis, Beta_Oxidation, TCA_Cycle, OXPHOS, FA_Synthesis)
-    with explicit gene vectors replacing the invalid range syntax from v1
-  - PPARG_Targets gene set (biology-specific to PPARG OE project)
-  - Myelolipoma exclusion rationale and filter
-  - ec_subtype_colors from HumanFat validated_examples.yaml
-  - Output subdirectory structure from MetabolicProfile run

@@ -350,7 +350,7 @@ Table is sorted by `p_adj` ascending (most significant first).
 
 ## Project-Specific Values (Stage for Phase 4 examples/)
 
-- `examples/humanfat_de_comprehensive.md`:
+- `examples/de_comprehensive_example_A.md`:
   - GROUP_COL = tissue group column (6 tissue groups)
   - LABEL_COL = EC subtype column
   - SUBTYPE_LABELS = character vector of 6 EC subtype names

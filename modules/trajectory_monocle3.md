@@ -286,7 +286,7 @@ downstream_analyses:
 
 ## Project-Specific Values (Stage for Phase 4 examples/)
 
-- `examples/humanfat_trajectory.md`:
+- `examples/trajectory_example_A.md`:
   - `LABEL_COL = "ec_subtype"`, `EXCLUDE_PATTERN = "^AEC"`, `START_CLUSTER = "CapEC2"`
   - HumanFat EC subtype colors
   - Validated on 53,487 EC cells, 13 subtypes (HumanFat_Yang run 2026-03-05)
