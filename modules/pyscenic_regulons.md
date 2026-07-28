@@ -504,11 +504,3 @@ redundant once the loom file exists.
 - UMAPs must use coordinates exported from Seurat (in `metadata.csv`) —
   do not re-compute UMAP in Python
 
----
-
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-- `examples/nkxspleen_pyscenic.md`:
-  - NKXSpleen project paths and validated configuration
-  - SUBTYPE_ORDER for spleen EC subtypes
-  - Validated 317 regulons from KidneyNew run context
