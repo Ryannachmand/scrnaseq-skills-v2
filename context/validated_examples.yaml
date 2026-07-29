@@ -140,13 +140,13 @@ projects:
           "EC-DVR":   "#36E2A6"    # descending vasa recta — mint green
           "EC-LYM":   "#EFADFF"    # lymphatic — soft purple
           "EC-PTC":   "#4B6584"    # peritubular capillary (added post-hoc)
-          "EC-Prolif":"#EFADFF"    # proliferating (shares soft purple with EC-LYM in some plots)
+          "EC-Prolif": "#EFADFF"    # proliferating (shares soft purple with EC-LYM in some plots)
     validated_outputs:
       - "Kidney EC subtype annotation (7 subtypes including post-hoc EC-PTC)"
       - "CellChat v2 ligand-receptor analysis (EC-GC + peritubular ECs + stroma/epithelial/MoMF)"
       - "pySCENIC TF regulon analysis (317 regulons identified)"
       - "DE between EC subtypes (marker gene plots)"
-    last_validated: "2026-04-10"    # TFEC Expression Atlas run
+    last_validated: "2026-04-10"
     notes: |
       ASSAY SWITCHING IS CRITICAL: SCT for visualization (DimPlot/VlnPlot/dotplots),
       RNA+JoinLayers for FindMarkers/FindAllMarkers, RNA for CellChat. Always restore SCT after RNA steps.

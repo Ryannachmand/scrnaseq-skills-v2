@@ -15,7 +15,7 @@ parameters for the `atlas_co_umap` and `cross_dataset_dotplot` modules.
 
 **What this file is NOT:**
 Logic for expanding atlas names into brief parameters — that belongs to the deployment
-agent (Phase 6). This file is pure data.
+agent. This file is pure data.
 
 ---
 
