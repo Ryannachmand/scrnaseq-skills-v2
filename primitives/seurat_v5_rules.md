@@ -1,8 +1,5 @@
 ---
 # Seurat v5 Rules — v2
-# Migrated from ~/claude-skills/shared/seurat_v5_rules.md
-# Permanent corrections for Seurat v5 behavior. Apply in every generated R script.
-# Last validated: TFEC Expression Atlas run, 2026-04-10
 ---
 
 # Seurat v5 Rules

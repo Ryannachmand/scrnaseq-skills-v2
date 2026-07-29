@@ -1,11 +1,5 @@
 ---
 # AUCell Scoring — Reusable Helpers — v2
-# Migrated from ~/claude-skills/pipelines/LargeDataset/methods/metabolic_profile.md (lines 62–86)
-# F6 FIX applied:
-#   - run_aucell() and add_auc_to_seurat() lifted as standalone primitives
-#   - NO hardcoded gene sets (OXPHOS/FA_Synthesis/PPARG etc. belong in examples/)
-#   - Invalid R range syntax ("NDUFA1"-"NDUFA10") NOT carried forward — it was never valid R
-#   - Gene sets are caller-provided via the gene_sets argument
 ---
 
 # AUCell Scoring — Reusable Helpers
@@ -15,7 +9,7 @@ the core computation; gene set definitions are always caller-provided.
 
 **Important distinction:**
 - `run_aucell()` + `add_auc_to_seurat()` are general-purpose primitives (this file)
-- Specific gene sets (metabolic pathways, PPARG signatures, etc.) belong in examples/ (Phase 4)
+- Specific gene sets (metabolic pathways, PPARG signatures, etc.) belong in examples/
 
 ---
 
@@ -101,7 +95,7 @@ VlnPlot(so, features = names(gene_sets), group.by = label_col)
 
 ## Gene Set Sources
 
-Gene sets for specific biological contexts are maintained in examples/ (Phase 4).
+Gene sets for specific biological contexts are maintained in examples/.
 For common pathway gene sets, consider:
 - MSigDB Hallmark or KEGG collections via `msigdbr` package
 - Lab-curated sets from analysis briefs (see context/validated_examples.yaml per-project entries)

@@ -1,8 +1,5 @@
 ---
 # Harmony Integration — Canonical Recipe — v2
-# Authored in v2 Phase 1 (G8 from generalization_candidates.md)
-# Lifted from: LargeDataset/pipeline.md Stage 3 and IntegratePublicData/pipeline.md Stage 6
-# These two pipeline stages are nearly identical; this file provides a single canonical reference.
 ---
 
 # Harmony Integration — Canonical Recipe

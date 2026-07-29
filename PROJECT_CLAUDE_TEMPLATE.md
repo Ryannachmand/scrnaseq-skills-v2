@@ -1,7 +1,6 @@
 ---
 # Project CLAUDE.md Template — v2
 # Place this file in any new analysis project directory as CLAUDE.md.
-# Migrated approach from ~/claude-skills/PROJECT_CLAUDE_TEMPLATE.md — updated to reference v2.
 ---
 
 # Project CLAUDE.md

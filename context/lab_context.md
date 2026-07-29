@@ -1,16 +1,5 @@
 ---
 # Lab Context and Conventions — v2
-# Migrated from ~/claude-skills/lab_context.md
-# Stripped per D3/D4/D10 deletion candidates and Phase 1 scope:
-#   - Removed per-project notes (fat-scrnaseq-continued, KidneyNew, EyePublicData)
-#     → now live in context/validated_examples.yaml per-project context_defaults
-#   - Removed project-specific color palettes (ec_subtype_colors_adipose, ec_subtype_colors_kidney,
-#     adipose_type_colors, organ_tissue_colors, celltype_colors) → now in validated_examples.yaml
-#   - Removed commented-out bone marrow stroma (D3)
-#   - Removed commented-out unified_label_vocabulary and known_aliases sections (D4)
-#   - batch_correction_var set to sample_id (lab standard) — conflict with v1 brief_template.txt
-#     source_file default was D8 deletion candidate; lab_context.md was always the authority here
-# This file describes lab-level conventions only. Per-project overrides go in validated_examples.yaml.
 ---
 
 # Lab Context and Conventions

@@ -1,7 +1,5 @@
 ---
 # File Download Tips — v2
-# Migrated from ~/claude-skills/shared/file_downloads.md
-# No project-specific content in v1; carried forward as-is.
 ---
 
 # File Download Tips

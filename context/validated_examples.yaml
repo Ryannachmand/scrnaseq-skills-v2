@@ -1,15 +1,6 @@
 ---
 # Project Registry — validated_examples.yaml — v2
-# Migrated from ~/claude-skills/lab_context/validated_examples.yaml
-# Schema enriched per Phase 1 requirements:
-#   - Added status, pipeline, inputs, context_defaults, validated_outputs, last_validated, notes
-#   - eye-test-01 stub REMOVED (D2 deletion candidate — all fields were TODO placeholders)
-#   - fat-scrnaseq-continued → HumanFat (canonical project name)
-#   - BoneMarrowStroma, CoCulture, TabulaSapiensComparison entries added with inferred values
-#     from inventory documents. Fields that cannot be confidently inferred are marked null + TODO.
-#   - KidneyNew and EyePublicData migrated from v1 with field enrichment.
 # The deployment agent uses this registry as the per-project source of truth.
-# Per-project notes from v1 lab_context.md are consolidated here (D10 fix).
 ---
 
 # Project Registry

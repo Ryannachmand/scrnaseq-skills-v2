@@ -1,10 +1,5 @@
 ---
 # Canonical Color Palettes — v2
-# Authored in v2 Phase 1 (new file — does not exist in v1)
-# Addresses duplication_report.md §3.1, §3.2 — six files had drifted palette definitions.
-# Provides single authoritative palette definitions for all non-project-specific colors.
-# Project-specific palettes (EC subtypes, adipose depots, tissue types) live in
-# validated_examples.yaml under each project's context_defaults.palettes block.
 ---
 
 # Canonical Color Palettes

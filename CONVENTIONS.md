@@ -1,6 +1,5 @@
 ---
 # Conventions — claude-skills-v2
-# Authored in v2 Phase 1
 ---
 
 # Conventions

@@ -1,10 +1,5 @@
 ---
 # Visualization — Parameterized R Plot Recipes — v2
-# Migrated from ~/claude-skills/pipelines/LargeDataset/methods/aesthetics.md
-# F5 FIX applied throughout:
-#   - Proportion plot: patient_id / cell_fraction / source_file → function arguments
-#   - ec_colors / tissue_colors / adipose_type_colors → group_colors / subtype_colors args
-#   - 'EC Functional Dot Plot' → make_canonical_dotplot() with no EC-specific assumptions
 ---
 
 # Visualization — Parameterized R Plot Recipes

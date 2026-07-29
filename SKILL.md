@@ -1,6 +1,5 @@
 ---
 # scRNAseq Skills Library v2 — Master Router
-# Authored in v2 Phase 1
 ---
 
 # scRNAseq Skills Library v2

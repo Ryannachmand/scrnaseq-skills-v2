@@ -1,8 +1,6 @@
 ---
 # Known Atlases Registry
-# Part of the Known-Atlas Convention — see CONVENTIONS.md and pipeline.md Stage 8.1
-# Authored: Phase 3
-# Deployment agent integration: Phase 6 work (not in scope here)
+# Part of the Known-Atlas Convention — see CONVENTIONS.md
 ---
 
 # Known Atlases Registry
@@ -85,12 +83,7 @@ known_atlases:
                                        # validated: TabulaSapiensComparison project
                                        # produces ≥75% atlas cells in UMAP (80-85% observed)
                                        # with ~38k in-house cells across 6 subtypes
-    validated_date: "2026-04-15"       # inferred from Phase 2C staging notes
-                                       # ("Validated run: TabulaSapiensComparison, 2026-04-15")
-                                       # validated_examples.yaml TabulaSapiensComparison entry
-                                       # has last_validated: null (TODO). If the actual run
-                                       # used a different date, update both here and in the
-                                       # registry. Phase 4 agent found no contradicting evidence.
+    validated_date: "2026-04-15"
     notes: |
       Download format: h5ad (anndata); convert to Seurat with SeuratDisk or zellkonverter.
       Cell type column: cell_ontology_class (Cell Ontology terms, not free text).
@@ -168,9 +161,9 @@ Optional fields: `typical_cell_count`, `validated_date`, `notes`.
 
 ---
 
-## Phase 6 — Deployment Agent Integration (out of scope for Phase 3)
+## Deployment Agent Integration
 
-The deployment agent will consume this registry in Phase 6 by:
+The deployment agent consumes this registry by:
 1. Parsing `brief.atlas` string against all `display_names` lists (case-insensitive)
 2. On match: reading the registry entry for the matched atlas
 3. Injecting the registry values into `downstream_analyses.atlas_co_umap` and

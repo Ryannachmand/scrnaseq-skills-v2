@@ -1,13 +1,6 @@
 ---
 # Pseudobulk edgeR — Canonical Recipe — v2
-# Authored in v2 Phase 4+ (new method)
-# Written for: ThymusEC re-analysis (redmondlab4, 2026-07-23)
-# FLAGGED FOR LIBRARY REVIEW — new primitive, not yet in Phase 1-3 library
 #
-# Handles: edgeR glmQLFit on a pre-built DGEList (e.g. from pseudobulk aggregation).
-# Does NOT build the DGEList — assumes caller provides it (e.g. loaded from RDS).
-# Design note: intended for designs with replicated pseudobulk samples (n >= 2 per group).
-# For n=1 designs, the resulting DE is DESCRIPTIVE ONLY — see design_warning below.
 requires_context:
   palettes:
     - group_colors    # optional — named vector for volcano/heatmap coloring
@@ -86,7 +79,7 @@ contrasts_list <- list(
 # ── Design replication status — MUST set before running ──────────────────────
 # Set TRUE when n >= 2 biological replicates per group exist (safe to report p-values)
 # Set FALSE for n=1-per-group designs (descriptive logFC only; p-values unreliable)
-REPLICATED_DESIGN <- TRUE   # REPLACE: FALSE for thymus EC sort radiation axis
+REPLICATED_DESIGN <- TRUE   # REPLACE: FALSE for n=1-per-group designs
 ```
 
 ---

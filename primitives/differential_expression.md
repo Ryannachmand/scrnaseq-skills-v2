@@ -1,12 +1,5 @@
 ---
 # Differential Expression — Core Functions — v2
-# Migrated from ~/claude-skills/pipelines/LargeDataset/methods/differential_expression.md
-# F2 FIX: is_ambient() unified to full dual-filter (AMBIENT_PATTERNS + AMBIENT_EXPLICIT 16 genes).
-#         The v1 anatomical_de_analysis.md version (patterns-only) is wrong and not carried forward.
-# F3 FIX: is_confound() authored new — superset of is_ambient() adding sex-linked genes,
-#         HLA class II, histones, and unannotated identifiers. Phantom in v1 (called but never defined).
-# F4 FIX: functional_gene_sets removed from this primitive. It is a placeholder only.
-#         EC-specific gene sets from v1 belong in examples/ (Phase 4).
 ---
 
 # Differential Expression — Core Functions
@@ -111,7 +104,7 @@ LABEL_COL <- "project_specific"   # REPLACE: metadata column holding cell type l
 # ── Functional gene sets ─────────────────────────────────────────────────────
 # functional_gene_sets is a brief-supplied named list of gene vectors.
 # It is NOT defined here — the caller must provide it.
-# EC-specific gene sets from v1 belong in examples/ (Phase 4), not this primitive.
+# EC-specific gene sets belong in examples/, not this primitive.
 # Example structure:
 #   functional_gene_sets <- list(
 #     "Section A" = c("GENE1", "GENE2", ...),   # project_specific

@@ -1,7 +1,5 @@
 ---
 # GEO Data Download Rules — v2
-# Migrated from ~/claude-skills/shared/geo_download.md
-# No project-specific content in v1; carried forward as-is.
 ---
 
 # GEO Data Download Rules
