@@ -345,23 +345,3 @@ message("4-panel figure saved to: ", out_base)
 | Rare subtype invisible in UMAP | `n_per_subtype` exceeds actual subtype cell count | Watch for `< 500 cells` warning; note in figure legend |
 | atlas_df missing rows | `ATLAS_GROUP_COL` has NAs in in-house rows | The `!is.na(coords[[ATLAS_GROUP_COL]])` filter handles this correctly |
 
----
-
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-`examples/tabula_sapiens_co_umap.md` must define:
-
-- `INHOUSE_LABEL = "WCM"`, `ATLAS_LABEL = "TS"`, `SOURCE_COL = "dataset"`
-- `SUBTYPE_COL` = EC subtype column name (confirm from TabulaSapiensComparison project)
-- `ATLAS_GROUP_COL` = atlas organ column name
-- `HIGHLIGHT_INHOUSE = "CapEC"`, `HIGHLIGHT_ATLAS = "Fat EC"`
-- `N_PER_SUBTYPE = 1500` with ratio analysis context:
-  - In-house: ~38k cells across 6 subtypes; atlas: ~100k cells
-  - 1500/subtype × 6 subtypes = ~9k in-house vs ~100k atlas → atlas = 91% of UMAP input
-  - Result: atlas topology dominates while all 6 in-house subtypes are visible
-- `COORDS_CSV = "output2/ts_harmony_umap_presample_coords.csv"`
-- Validated script filenames: `06f_ts_umap_presample.R` (embed), `06g_ts_umap_replot.R` (replot)
-- Validated figure dimensions: `width = 21, height = 5.5` for 4-panel
-- Validated run: TabulaSapiensComparison, 2026-04-15
-- **Known font issue:** v1 used `base_family = "Source Sans 3"` which is not available in
-  r-env and causes a font error (documented in v1 pitfalls section). System fonts used instead.

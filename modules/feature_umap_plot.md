@@ -3,7 +3,7 @@
 # Pipeline: LargeDataset (compatible with any Seurat-based pipeline)
 # Migrated from ~/claude-skills/pipelines/LargeDataset/methods/feature_umap_plot.md
 # Phase 2 Group A — gene list and paths parameterized; primitives referenced
-# Validated on: 19,348 cells, R 4.5 / Seurat v5, log-normalized RNA layer (CoCulture run)
+# Validated on: multiple single-cell RNA-seq datasets
 requires_context:
   palettes: []
   metadata_columns:

@@ -19,9 +19,9 @@
 ```yaml
 downstream_analyses:
   de_comprehensive_csv:
-    group_col: tissue_type          # REQUIRED: comparison column (REPLACE with your group column)
+    group_col: "project_specific"   # REQUIRED: comparison column (REPLACE with your group column)
                                     # REPLACE: list your actual group values in a comment here
-    label_col: mylabel              # optional: cell subtype column for top_subtype annotation
+    label_col: "project_specific"   # optional: cell subtype column for top_subtype annotation
     group_order:                    # optional: display ordering for groups (REPLACE with your levels)
       - "GroupA"
       - "GroupB"
@@ -33,7 +33,7 @@ downstream_analyses:
 ```r
 # REPLACE: exclude any groups that should not be part of the analysis
 # Example: exclude a rare or outlier group before running de_comprehensive_csv
-so_subset <- so[, so$tissue_type != "ExcludedGroup"]
+so_subset <- so[, so$project_specific != "ExcludedGroup"]
 # Rationale: document why this group is excluded for your project
 ```
 

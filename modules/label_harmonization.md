@@ -2,8 +2,7 @@
 # Module: Label Harmonization
 # Pipeline: IntegratePublicData
 # Migrated from ~/claude-skills/pipelines/IntegratePublicData/methods/label_harmonization.md
-# Phase 2 Group A — broad_label default parameterized; BoneMarrowStroma-specific
-#   result_distribution example values documented for Phase 4 examples/
+# broad_label default parameterized; result_distribution example values documented in examples/
 requires_context:
   palettes: []
   metadata_columns:

@@ -346,14 +346,3 @@ message(sprintf("Output: %s (%d genes)",
 
 Table is sorted by `p_adj` ascending (most significant first).
 
----
-
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-- `examples/de_comprehensive_example_A.md`:
-  - GROUP_COL = tissue group column (6 tissue groups)
-  - LABEL_COL = EC subtype column
-  - SUBTYPE_LABELS = character vector of 6 EC subtype names
-  - GROUP_ORDER for tissue group display ordering
-  - Validated output: ~37,692 EC cells; ~253 significant genes after is_confound() filter;
-    validated 2026-04-23

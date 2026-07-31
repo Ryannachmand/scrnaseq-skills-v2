@@ -26,7 +26,7 @@ Primary tissues and cell types this lab routinely works with.
 primary_tissues:
   - Adipose (multi-depot: visceral fat, subcutaneous fat, orbital fat, lipoma, breast fat, myelolipoma)
   - Kidney (glomerular + tubular vasculature, whole organ multi-region)
-  - Eye (RPE / Choroid / posterior segment — normal, AMD, nAMD, fetal)
+  - Eye (posterior segment; multiple disease states)
 
 cell_compartments_of_interest:
   - Retinal Pigment Epithelium (RPE)
@@ -82,7 +82,7 @@ batch_correction_var: sample_id     # lab default — column passed to RunHarmon
                                      # IMPORTANT: this is sample_id at the lab level.
                                      # Individual projects may override this in their
                                      # context_defaults in validated_examples.yaml.
-                                     # (HumanFat used source_file — see that project entry)
+                                     # (some projects use source_file — see per-project registry)
 
 whole_object_defaults:
   n_variable_features: 4000
@@ -169,7 +169,7 @@ When comparing in-house (WCM) data against a public atlas (e.g. Tabula Sapiens):
 Implement by setting SOURCES_ORDER in @modules/cross_dataset_dotplot.md:
   SOURCES_ORDER <- c("inhouse_label", "atlas_label")
 
-The in-house label (e.g. "WCM", "inhouse_thyroid") must be the first element.
+The in-house label (e.g. "WCM", "inhouse_data") must be the first element.
 This rule applies regardless of cell count -- do not let the atlas dominate column
 order simply because it has more cells.
 
@@ -237,8 +237,7 @@ angiocrine_factors <- c(
 ### Cytokines & Immune Modulatory
 
 Union of surface receptors and cytokines/chemokines. Single category per lab
-convention (Test 1 brief: "merging Surface Markers into Cytokines & Immune
-Modulatory"). Captures cell-surface signaling receptors AND secreted ligands
+convention. Captures cell-surface signaling receptors AND secreted ligands
 in one biology-oriented set.
 
 ```r
@@ -370,9 +369,9 @@ The DE results used for filtering must match the biological question the
 plot is asking:
 
 - Plot stratified by Condition (Tumor vs Normal) -> filter by Condition DE
-- Plot stratified by Group (Normal, PTC-FV, PTC-CT, HCC, ATC) -> filter by
+- Plot stratified by Group (Normal, ConditionA, ConditionB, ConditionC) -> filter by
   per-Group DE vs Normal (union: include a gene if it passes the filter
-  for ANY tumor group vs Normal)
+  for ANY non-Normal group vs Normal)
 - Plot stratified by cell type or subcluster -> filter by per-cell-type DE
   for the relevant contrast
 - Cross-organ plot -> filter by organ-vs-rest DE for at least one organ
@@ -420,7 +419,7 @@ individually labeled and the goal is interpretability of specific genes.
    The per-project `context_defaults` block supersedes lab-level defaults for that project.
 
 2. `batch_correction_var` at the lab level is `sample_id`. If the project brief uses a
-   different column name (e.g., `source_file` for HumanFat, `sample` for KidneyNew),
+   different column name (e.g., `source_file` or `sample` depending on the project),
    that override is in validated_examples.yaml `context_defaults.batch_correction_var`.
 
 3. Color palettes for specific tissues/cell types are in validated_examples.yaml under

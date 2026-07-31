@@ -119,10 +119,7 @@ COLOR_SEX_M <- "#45B7D1"
 Project-specific palettes are NOT defined here. They are in `validated_examples.yaml`
 under each project's `context_defaults.palettes` block.
 
-Current projects with defined palettes in validated_examples.yaml:
-- `HumanFat` — celltype_colors, adipose_type_colors, ec_subtype_colors, organ_tissue_colors
-- `KidneyNew` — ec_subtype_colors_kidney
-- `BoneMarrowStroma` — TODO: label_colors for STROMA_ORDER (not yet in library)
+Project-specific palettes are defined in each project's private CLAUDE.md file, not in this registry.
 
 To add a new project palette: add an entry to `context_defaults.palettes` in
 `validated_examples.yaml`. Never add project palettes to this file.

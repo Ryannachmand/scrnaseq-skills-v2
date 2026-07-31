@@ -20,14 +20,9 @@
 downstream_analyses:
   trajectory:
     enabled: true
-    label_col: mylabel              # REPLACE: label column containing your cell type annotations
-    exclude_pattern: "^AEC"        # REPLACE: regex pattern to exclude cell types from trajectory
-                                    # choose a biologically plausible exclusion for your data
-                                    # (e.g., exclude a terminal/endpoint cell type that would
-                                    # collapse branching structure into a single terminus)
-    start_cluster: "CapEC2"        # REPLACE: root cluster for pseudotime ordering
-                                    # choose a biologically plausible root cell type for your data
-                                    # (e.g., a progenitor, transitional, or immature phenotype)
+    label_col: "project_specific"   # REPLACE: label column containing your cell type annotations
+    exclude_pattern: "^AEC"        # REPLACE: pattern matching a terminal/endpoint cell type to exclude
+    start_cluster: "CapEC2"        # REPLACE: exact subtype label for trajectory root (e.g., a progenitor/immature phenotype)
     end_cluster: null               # Monocle3 infers endpoints from graph structure
 
 context_overrides:

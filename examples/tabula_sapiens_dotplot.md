@@ -1,16 +1,15 @@
 ---
-# Example: TabulaSapiensComparison Cross-Dataset Dotplot
+# Example: Cross-Dataset Dotplot Example (in-house vs. Tabula Sapiens)
 # Status: full-build
-# Validated: 2026-03-24 (TabulaSapiensComparison run)
+# Example structure for an in-house vs. public atlas dotplot comparison
 ---
 
-# Example: TabulaSapiensComparison Cross-Dataset Dotplot
+# Example: Cross-Dataset Dotplot Example (in-house vs. Tabula Sapiens)
 
 ## Instantiates
 - @modules/cross_dataset_dotplot.md
 
 ## Project context
-- Project: TabulaSapiensComparison
 - Validated: 2026-03-24
 - Status: full-build
 
@@ -35,7 +34,7 @@ downstream_analyses:
       # Section 1: shared EC markers (present in both WCM and TS)
       # Section 2: WCM-specific markers (in-house EC biology not represented in TS)
       # Section 3: TS-specific markers (atlas markers below in-house detection threshold)
-      # TODO: fill in specific gene lists from TabulaSapiensComparison project records
+      # REPLACE: fill in gene lists from your own project data
       Section_1_Shared:
         - KDR
         - FLT1
@@ -47,24 +46,20 @@ downstream_analyses:
         - ERG
         - ETS1
         - PROX1             # lymphatic marker (shared)
-      Section_2_WCM_Specific:
-        - PPARG             # WCM adipose EC marker
-        - FABP4
-        - APOE
-        - LPL
-        # TODO: add WCM-specific markers from project records
+      Section_2_ProjectSpecific:
+        - "<GENE_1>"  # REPLACE: markers identified in your in-house data
+        - "<GENE_2>"
+        - "<GENE_3>"
       Section_3_TS_Specific:
         - ACE2               # kidney EC marker in TS
         # TODO: add TS-specific markers from project records
     sec1_force:
-      # TFs present in in-house data but below TS detection threshold due to sequencing depth.
-      # These are forced into Section 1 to show their WCM-side expression even when they
+      # TFs present in in-house data but below atlas detection threshold due to sequencing depth.
+      # These are forced into Section 1 to show in-house expression even when they
       # fall below the automatic variable gene selection threshold in the atlas.
-      # Rationale per Phase 2C: FORCE_GENES_SEC1 is a project-specific analytical decision
-      # that must be justified per-gene.
-      - KLF2    # mechanosensing TF; high in WCM ECs but underpowered in TS
-      - ERG     # canonical EC TF; confirmed in WCM but depth-limited in TS adipose
-      # TODO: add remaining forced TF list from TabulaSapiensComparison project records
+      # FORCE_GENES_SEC1 is a project-specific analytical decision that must be justified per-gene.
+      - "<GENE_A>"  # REPLACE: gene confirmed in in-house data but below atlas detection threshold
+      - "<GENE_B>"
     group_colors:
       "WCM": "#FFF8E1"          # warm yellow background for in-house WCM column group
       "TS":  "#FFEBEE"          # light red background for primary TS atlas column group
@@ -96,7 +91,7 @@ The v1 used the following column naming pattern for the dotplot x-axis:
 
 ## Validation notes
 
-- Validated on TabulaSapiensComparison project (2026-03-24)
+- Illustrative example of the cross-dataset dotplot pattern
 - Three-section dotplot: shared markers / WCM-specific / TS-specific
 - TF diamond variant was also run (Part C); uses `shape = 23` patch on the dotplot
 - Depth correction: within-dataset z-scoring applied separately to WCM and TS
@@ -109,8 +104,8 @@ The v1 used the following column naming pattern for the dotplot x-axis:
   gene labels) are NOT available in r-env. The v1 used both; they silently fall back to
   system fonts. The module defaults to system fonts — do not pass `family` arguments.
 - The `sec1_force` list is a project-specific analytical decision: genes are forced into
-  Section 1 because their WCM expression is biologically confirmed but falls below the
-  automatic variable gene threshold in the deeper TS dataset. Each gene requires justification.
+  Section 1 because their in-house expression is biologically confirmed but falls below the
+  automatic variable gene threshold in the deeper atlas dataset. Each gene requires justification.
 - Column whitespace→dot conversion: if loading `cor_mat` from a CSV round-trip, apply
   `gsub("\\.", " ", colnames(cor_mat))` to restore spaces in column names
 - `cairo_pdf` required for patchwork outputs (same issue as co_umap — `useDingbats = FALSE` omitted)

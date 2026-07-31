@@ -80,9 +80,8 @@ known_atlases:
     atlas_group_col: "cell_ontology_class"   # cell type column in TS metadata
     typical_cell_count: 483152         # approximate; varies by tissue subset downloaded
     recommended_downsample_n: 1500     # in-house cells per subtype before co-UMAP
-                                       # validated: TabulaSapiensComparison project
                                        # produces ≥75% atlas cells in UMAP (80-85% observed)
-                                       # with ~38k in-house cells across 6 subtypes
+                                       # with ~N in-house cells across K subtypes (illustrative; project-specific)
     validated_date: "2026-04-15"
     notes: |
       Download format: h5ad (anndata); convert to Seurat with SeuratDisk or zellkonverter.

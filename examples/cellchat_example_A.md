@@ -24,14 +24,16 @@ downstream_analyses:
                                     # Script 6 compares two groups within this column
     organism: "human"
     n_workers: 4                    # plan("sequential") is MANDATORY — see critical note
-    source_celltypes:               # REPLACE: cell types to use as signal senders
+    source_celltypes:
+      # REPLACE: cell type names from your dataset; the values below are illustrative examples
       - "AEC"
       - "CapEC"
       - "CapEC2"
       - "VenEC1"
       - "VenEC2"
       - "VenEC3"
-    target_celltypes:               # REPLACE: all cell types as potential receivers
+    target_celltypes:
+      # REPLACE: cell type names from your dataset; the values below are illustrative examples
       - "AEC"
       - "CapEC"
       - "CapEC2"

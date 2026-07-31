@@ -1,16 +1,15 @@
 ---
-# Example: TabulaSapiensComparison Co-UMAP Embedding
+# Example: Cross-Dataset UMAP Example (in-house vs. Tabula Sapiens)
 # Status: full-build
-# Validated: 2026-04-15 (TabulaSapiensComparison project)
+# Example structure for cross-dataset UMAP
 ---
 
-# Example: TabulaSapiensComparison Co-UMAP Embedding
+# Example: Cross-Dataset UMAP Example (in-house vs. Tabula Sapiens)
 
 ## Instantiates
 - @modules/atlas_co_umap.md
 
 ## Project context
-- Project: TabulaSapiensComparison
 - Validated: 2026-04-15
 - Status: full-build
 
@@ -43,29 +42,29 @@ downstream_analyses:
 context_overrides:
   palettes:
     subtype_colors:
-      "AEC":    "#F4433C"
-      "CapEC":  "#FF9800"
-      "CapEC2": "#FFEB3B"
-      "VenEC1": "#4CAF50"
-      "VenEC2": "#2196F3"
-      "VenEC3": "#9C27B0"
+      "AEC":    "#REPLACE_HEX"
+      "CapEC":  "#REPLACE_HEX"
+      "CapEC2": "#REPLACE_HEX"
+      "VenEC1": "#REPLACE_HEX"
+      "VenEC2": "#REPLACE_HEX"
+      "VenEC3": "#REPLACE_HEX"
 ```
 
-## WCM/TS ratio analysis (downsampling rationale)
+## In-house/atlas ratio analysis (downsampling rationale)
 
 ```
 Dataset composition before downsampling:
-  In-house (WCM): ~38,000 EC cells, 6 subtypes
-  Tabula Sapiens: ~100,000 EC cells (Fat EC + other organ ECs)
+  In-house: N in-house cells, K subtypes
+  Atlas: ~100,000 EC cells (various organ ECs)
 
 After downsampling at n_per_subtype = 1500:
-  WCM contribution: 1500 × 6 subtypes = ~9,000 cells
-  TS contribution: ~100,000 cells (no downsampling applied to atlas)
+  in-house contribution: n_per_subtype × K subtypes = ~M cells
+  Atlas contribution: ~100,000 cells (no downsampling applied to atlas)
 
 UMAP input composition:
-  WCM: ~9,000 / (9,000 + 100,000) = ~8% of UMAP input
-  TS:  ~100,000 / (9,000 + 100,000) = ~92% of UMAP input
-  → Atlas dominates UMAP geometry (validated 2026-04-15)
+  In-house: ~M / (M + 100,000) = minority of UMAP input
+  Atlas:    ~100,000 / (M + 100,000) = majority of UMAP input
+  → Atlas dominates UMAP geometry
 
 Interpretation: at 1500/subtype, in-house cells embed into atlas topology rather than
 forcing atlas cells into in-house topology. This is the desired behavior for atlas
@@ -76,7 +75,7 @@ Increasing DOWNSAMPLE_N above ~2500 risks in-house cells distorting atlas topolo
 ## Validated script filenames and figure dimensions
 
 ```r
-# Validated script filenames (TabulaSapiensComparison run):
+# Example script filenames for a cross-dataset UMAP run:
 # 06f_ts_umap_presample.R   — pre-downsample embedding + coordinate saving
 # 06g_ts_umap_replot.R      — replot from saved coordinates with annotation panels
 
@@ -100,7 +99,7 @@ Explicit values in the `atlas_co_umap` config block take precedence over registr
 
 ## Validation notes
 
-- Validated on TabulaSapiensComparison project (2026-04-15)
+- Illustrative example of the cross-dataset UMAP pattern
 - Output dir: `output2/` (this project used output2/ — set OUTPUT_DIR accordingly)
 - 4-panel co-UMAP output: WCM cells only, TS cells only, co-embedding, highlight comparison
 

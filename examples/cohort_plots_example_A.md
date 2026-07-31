@@ -90,7 +90,7 @@ ann_colors <- list(
 
 ## Validation notes
 
-- Example validated on a harmonized UMAP from multiple source datasets (bone marrow stroma)
+- Example validated on a harmonized UMAP from multiple source datasets (multi-source stromal dataset)
 - Four annotation strips: Dataset, Organ, Condition, Data.Type
 - Outputs written to `<YOUR_OUTPUT_DIR>/cohort_plots/`
 - Three-part output: correlation heatmap (A), chord diagram (B), proportion heatmap (C)

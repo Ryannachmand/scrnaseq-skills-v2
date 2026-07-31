@@ -419,28 +419,3 @@ if (length(tf_in_data) == 0) {
 | TF diamond variant | same width | `n_tfs * 0.38 + 4.0` |
 | Centroid heatmap | 10 | 9 |
 
----
-
-## Project-Specific Values (Stage for Phase 4 examples/)
-
-`examples/tabula_sapiens_dotplot.md` must define:
-
-- `SOURCE_COL = "dataset"`, in-house label and atlas label values from TabulaSapiensComparison
-- `SOURCES_ORDER` defining display order: in-house source first, atlas second
-- Column label convention: in-house subtypes as `"{inhouse_label} {subtype}"`,
-  atlas organs as `"{organ_tissue} EC"` (toTitleCase) — document the paste convention used
-- `marker_genes`: named list with 3 sections:
-  - Section 1 — shared markers: genes enriched in BOTH in-house and atlas primary comparison
-  - Section 2 — in-house-specific: high in-house LFC, not in atlas markers
-  - Section 3 — atlas-specific: high atlas LFC, low/absent in-house signal
-- `SEC1_FORCE`: the specific gene vector forced into Section 1 in the TF analysis.
-  **Required justification:** these TFs appear in in-house markers but score below threshold
-  in atlas markers due to depth differences; forcing ensures they appear in the comparison
-  panel. Document the biological rationale for each forced gene.
-- `GROUP_COLORS`: warm yellow for in-house columns (`"#FFF8E1"`), light red for primary
-  atlas column (`"#FFEBEE"`)
-- Validated figure dimensions from TabulaSapiensComparison run (2026-03-24)
-- **Known font issue:** v1 referenced `"Source Sans 3"` (x-axis) and `"Playfair Display"`
-  (y-axis gene labels) — both unavailable in r-env. System fonts used. If these fonts are
-  installed in a future environment, they can be added via `base_family` and
-  `axis.text.y = element_text(family = "Playfair Display")`.

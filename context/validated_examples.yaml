@@ -3,6 +3,10 @@
 # The deployment agent uses this registry as the per-project source of truth.
 ---
 
+# This registry demonstrates the schema for per-project context.
+# Real project entries with populated notes/outputs live in each project's
+# private CLAUDE.md file, not here.
+
 # Project Registry
 
 Schema for each entry:
@@ -26,264 +30,170 @@ Schema for each entry:
 
 projects:
 
-  HumanFat:
+  ExampleProject_A:
     status: active
     pipeline: LargeDataset
     inputs:
       type: rds
       paths:
-        - null  # TODO: fill in actual RDS paths from project directory
-      notes: "Pre-processed objects — skip QC/normalization/UMAP. Start at Stage 8 equivalent."
+        - "<YOUR_INPUT_PATHS>"
+      notes: "Pre-processed objects — skip QC/normalization/UMAP. Start at annotation."
     context_defaults:
-      batch_correction_var: source_file    # HumanFat used source_file, NOT sample_id
+      batch_correction_var: source_file
       label_col_whole_object: celltype
       label_col_ec_subset: mylabel
-      sample_col: source_file              # sample column is source_file in this project
-      group_col: tissue_type               # tissue comparison column
-      active_assay: RNA                    # always RNA for DE in this project
-      umap: pre-computed                   # do NOT rerun UMAP
-      ec_filter: "RibHighEC excluded from analysis plots"
-      label_order: null                    # TODO: canonical STROMA_ORDER equivalent for EC subtypes
+      sample_col: source_file
+      group_col: tissue_type
+      active_assay: RNA
+      umap: pre-computed
+      label_order: null
       palettes:
         celltype_colors:
-          "Stromal Cell / ASPC":      "#2D6A4F"
-          "Venous EC":                "#E07A5F"
-          "Arterial EC":              "#C1440E"
-          "Capillary EC":             "#F2CC8F"
-          "Lymphatic EC":             "#E07A9F"
-          "Vasc. Smooth Muscle Cell": "#C9A0DC"
-          "Macrophage":               "#3D405B"
-          "Naive Monocyte":           "#4A7C59"
-          "Polarized Monocyte":       "#6B8F71"
-          "Prolif. Monocyte":         "#7B6888"
-          "Dendritic Cell":           "#B8860B"
-          "pDC":                      "#DAA520"
-          "Mast Cell":                "#81B29A"
-          "Neutrophil":               "#9E9E9E"
-          "B cell":                   "#B0C4DE"
-          "Plasma Cell":              "#D4A5A5"
-          "CD3+ T cell":              "#4ECDC4"
-          "CD4+ T cell":              "#45B7D1"
-          "CD8+ T cell":              "#2196A8"
-          "Epithelial":               "#A0785A"
-        adipose_type_colors:
-          "Subcutaneous Fat": "#F4A460"
-          "Visceral Fat":     "#CD853F"
-          "Lipoma":           "#DEB887"
-          "Liposuction Fat":  "#D2691E"
-          "Myelolipoma":      "#8B4513"
-          "Breast Fat":       "#FFB6C1"
-          "Orbital Fat":      "#20B2AA"
-        organ_tissue_colors:
-          "Kidney Fat":    "#4472C4"
-          "Abdominal Fat": "#ED7D31"
-          "Spleen Fat":    "#A9D18E"
-          "Lipoma Fat":    "#FF0000"
-          "Flanks Fat":    "#7030A0"
-          "Myelolipoma":   "#C00000"
-          "Breast Fat":    "#FFB6C1"
-          "Orbital Fat":   "#00B0F0"
+          "KeyA":  "#2D6A4F"
+          "KeyB":  "#E07A5F"
+          "KeyC":  "#C1440E"
+          "KeyD":  "#F2CC8F"
+          "KeyE":  "#E07A9F"
+          "KeyF":  "#C9A0DC"
+          "KeyG":  "#3D405B"
+          "KeyH":  "#4A7C59"
+          "KeyI":  "#6B8F71"
+          "KeyJ":  "#7B6888"
+          "KeyK":  "#B8860B"
+          "KeyL":  "#DAA520"
+          "KeyM":  "#81B29A"
+          "KeyN":  "#9E9E9E"
+          "KeyO":  "#B0C4DE"
+          "KeyP":  "#D4A5A5"
+          "KeyQ":  "#4ECDC4"
+          "KeyR":  "#45B7D1"
+          "KeyS":  "#2196A8"
+          "KeyT":  "#A0785A"
+        group_colors:
+          "KeyA": "#F4A460"
+          "KeyB": "#CD853F"
+          "KeyC": "#DEB887"
+          "KeyD": "#D2691E"
+          "KeyE": "#8B4513"
+          "KeyF": "#FFB6C1"
+          "KeyG": "#20B2AA"
         ec_subtype_colors:
-          "AEC":    "#F4433C"
-          "CapEC":  "#FF9800"
-          "CapEC2": "#FFEB3B"
-          "VenEC1": "#4CAF50"
-          "VenEC2": "#2196F3"
-          "VenEC3": "#9C27B0"
-    validated_outputs:
-      - "EC subtype UMAP with LabelClusters (HumanFat_Yang run)"
-      - "Cell type proportion plot (tissue types × EC subtypes)"
-      - "DE volcano plots: Visceral vs Subcutaneous Fat, Orbital vs Lipoma (all ECs + CapEC + VenEC)"
-      - "Functional heatmaps and dot plots (EC biology gene sets)"
-      - "Trajectory analysis (Caps and Vens — HumanFat_Yang run)"
-      - "CellChat: LiposuctionFat + BreastFat (KidneyNew run validated separately)"
-      - "PPARG bulk OE concordance (bulk_concordance.md validated)"
-      - "Metabolic profile AUCell scoring (MetabolicProfile run validated)"
-      - "pySCENIC TF regulon analysis (KidneyNew run; also run on HumanFat)"
-    last_validated: "2026-03-11"
-    notes: |
-      Biology focus: EC metabolic state and its influence on surrounding adipose tissue;
-      PPARG TF presence in in-vivo fat ECs linking in vitro PPARG OE to in vivo EC identity.
-      Output dir: output2/ within project folder.
-      DE comparisons: (1) Visceral Fat vs Subcutaneous Fat, (2) Orbital Fat vs Lipoma.
-      Bulk OE reference: DE_significant_Group4_vs_Group2.csv (PPARG OE vs HUVEC control, ROSI).
-      EC label column 'mylabel' contains: AEC, CapEC, CapEC2, VenEC1, VenEC2, VenEC3, RibHighEC.
-      RibHighEC is a low-quality/high-ribosomal cluster — exclude from EC analysis plots.
-      tissue_type = broad tissue category; additional_notes = higher-resolution organ location.
-      Remove empty strings from additional_notes before grouping.
-      Previously completed: ECDotPlot, ECTF_Diamond_Plot, DiffAbund, TrajectoryCapsAndVens, CellChat.
+          "AEC":    "#REPLACE_HEX"
+          "CapEC":  "#REPLACE_HEX"
+          "CapEC2": "#REPLACE_HEX"
+          "VenEC1": "#REPLACE_HEX"
+          "VenEC2": "#REPLACE_HEX"
+          "VenEC3": "#REPLACE_HEX"
+    validated_outputs: []  # see project records
+    last_validated: null
+    notes: null  # per-project context lives in that project's private CLAUDE.md, not in this registry
 
-  KidneyNew:
+  ExampleProject_B:
     status: active
     pipeline: LargeDataset
     inputs:
       type: rds
       paths:
-        - null  # TODO: fill in actual RDS paths
-      notes: "Pre-processed SCT-normalized objects. Skip QC/normalization/UMAP. Start at annotation."
+        - "<YOUR_INPUT_PATHS>"
+      notes: "Pre-processed normalized objects. Skip QC/normalization/UMAP. Start at annotation."
     context_defaults:
-      batch_correction_var: sample    # KidneyNew sample column is 'sample' (S1/S2/S3)
+      batch_correction_var: sample
       label_col_whole_object: celltype
-      label_col_ec_subset: ec_subtype_final   # final column after annotation; ec_subtype at start
-      sample_col: sample               # values: S1, S2, S3
-      group_col: null                  # TODO: confirm group comparison column for this project
+      label_col_ec_subset: ec_subtype_final
+      sample_col: sample
+      group_col: null
       active_assay_visualization: SCT
-      active_assay_findmarkers: RNA    # JoinLayers first, then switch back to SCT
+      active_assay_findmarkers: RNA
       active_assay_cellchat: RNA
-      annotation_approach: refine_existing   # start from existing mylabel, fill NAs only
+      annotation_approach: refine_existing
       umap: pre-computed
       palettes:
         ec_subtype_colors:
-          "EC-GC":    "#10B8F5"    # glomerular capillary — cyan/sky blue
-          "EC-AEA":   "#ECA7A0"    # ascending thin limb — salmon/coral
-          "EC-AVR":   "#A9B100"    # ascending vasa recta — olive green
-          "EC-DVR":   "#36E2A6"    # descending vasa recta — mint green
-          "EC-LYM":   "#EFADFF"    # lymphatic — soft purple
-          "EC-PTC":   "#4B6584"    # peritubular capillary (added post-hoc)
-          "EC-Prolif": "#EFADFF"    # proliferating (shares soft purple with EC-LYM in some plots)
-    validated_outputs:
-      - "Kidney EC subtype annotation (7 subtypes including post-hoc EC-PTC)"
-      - "CellChat v2 ligand-receptor analysis (EC-GC + peritubular ECs + stroma/epithelial/MoMF)"
-      - "pySCENIC TF regulon analysis (317 regulons identified)"
-      - "DE between EC subtypes (marker gene plots)"
-    last_validated: "2026-04-10"
-    notes: |
-      ASSAY SWITCHING IS CRITICAL: SCT for visualization (DimPlot/VlnPlot/dotplots),
-      RNA+JoinLayers for FindMarkers/FindAllMarkers, RNA for CellChat. Always restore SCT after RNA steps.
-      NA values in mylabel stored as string "NA", not R native NA — check both when filtering.
-      EC-PTC subtype added post-hoc via subclustering (seurat_cluster 3, res=0.2, subcluster 3_1,
-      991 cells) — CellChat object predates EC-PTC and does not include it.
-      CellChat v2 known bugs (use plan("sequential") at top of any CellChat script):
-        - netVisual_aggregate(signaling=NULL) fails → use netVisual_circle()
-        - netVisual_heatmap annotation bug → replace with custom ggplot heatmap
-        - pairLR.use validation precedence bug → bypass with net= parameter
-      Kidney EC biology: EC-GC=filtration/VEGF; AEA=metabolic/urea; AVR=fenestrated/countercurrent;
-      DVR=oxygen delivery/pericyte-rich; EC-LYM=immune surveillance/interstitial fluid.
+          "EC-GC":    "#REPLACE_HEX"
+          "EC-AEA":   "#REPLACE_HEX"
+          "EC-AVR":   "#REPLACE_HEX"
+          "EC-DVR":   "#REPLACE_HEX"
+          "EC-LYM":   "#REPLACE_HEX"
+          "EC-PTC":   "#REPLACE_HEX"
+          "EC-Prolif": "#REPLACE_HEX"
+    validated_outputs: []  # see project records
+    last_validated: null
+    notes: null  # per-project context lives in that project's private CLAUDE.md, not in this registry
 
-  EyePublicData:
+  ExampleProject_C:
     status: active
     pipeline: IntegratePublicData
     inputs:
       type: geo
       paths:
-        - GSE183320    # VoigtAMD (~30k cells) — cells×genes CSV format
-        - GSE236566    # OcularAtlas (~36k cells) — single merged MTX
-        - GSE210543    # CollinDev (~21k cells) — pre-normalized CSV
-      notes: "GSE135092 excluded — bulk RNA-seq only (no scRNA deposited on GEO)."
+        - "<YOUR_GEO_IDS>"
+      notes: "Mixed normalization: raw-count datasets get NormalizeData(); pre-normalized datasets go directly into SetAssayData."
     context_defaults:
       batch_correction_var: sample_id
-      normalization: mixed    # GSE183320+GSE236566: raw→NormalizeData; GSE210543: pre-normalized
+      normalization: mixed
       n_variable_features: 2250
       n_pcs: 30
-      clustering_resolution: 0.3    # exploratory only
-      downsample_ceiling: 100000    # only downsample if total > 100k
-      palettes: null                # TODO: no established color palette for this project
-    validated_outputs:
-      - "Harmonized UMAP (~87k cells: VoigtAMD + OcularAtlas + CollinDev)"
-      - "Label harmonization YAML for unified cell type vocabulary"
-      - "SCENIC TF regulon analysis on EC/AMD subsets (KLF2/SOX9 networks identified)"
-    last_validated: null   # TODO: confirm date
-    notes: |
-      Mixed normalization is valid: raw-count datasets get NormalizeData();
-      pre-normalized datasets (no raw counts on GEO) go directly into SetAssayData(layer="data").
-      Flag pre-normalized cells with metadata column: pre_normalized = TRUE.
-      GSE183320 format: cells×genes CSV; first 8 columns are metadata (barcode, disease_status,
-      MMP9_rs4810482, celltype, library, age, sex, PMI); gene expression starts at column 9.
-      GSE236566 format: single merged MTX; RPE/choroid cells filtered by barcode name prefix.
-      JoinLayers(so, assay="RNA") is MANDATORY before ANY operation on merged objects.
-      No SCT normalization — RNA assay only throughout.
-      SCENIC on small disease-specific subsets (AMD ECs) is underpowered — cross-dataset
-      confounding likely; interpret regulon results cautiously.
-      Pipeline is exploratory only; ends at harmonized UMAP. No subset analysis planned.
-      Shorthand: VoigtAMD (GSE183320), OcularAtlas (GSE236566), CollinDev (GSE210543).
+      clustering_resolution: 0.3
+      downsample_ceiling: 100000
+      palettes: null
+    validated_outputs: []  # see project records
+    last_validated: null
+    notes: null  # per-project context lives in that project's private CLAUDE.md, not in this registry
 
-  BoneMarrowStroma:
+  ExampleProject_D:
     status: completed
     pipeline: IntegratePublicData
     inputs:
-      type: null     # TODO: confirm input types (public GEO or in-house RDS?)
+      type: null
       paths:
-        - null       # TODO: fill in dataset paths or GEO IDs
-      notes: "Multi-source dataset: Vertebrae, Iliac Crest, Femoral Head anatomical sites."
+        - "<YOUR_INPUT_PATHS>"
+      notes: "Multi-source dataset from multiple anatomical sites."
     context_defaults:
       batch_correction_var: sample_id
-      label_col: unified_label    # IntegratePublicData standard
-      group_col: site             # anatomical site column
-      groups:                     # ordered anatomical sites for multi-group DE
-        - "Vertebrae"
-        - "Iliac Crest"
-        - "Femoral Head"
-      label_order: null           # TODO: STROMA_ORDER is referenced in v1 anatomical_de_analysis.md
-                                  # but never defined in any library file. Needs human curation.
+      label_col: unified_label
+      group_col: site
+      groups:
+        - "GroupA"
+        - "GroupB"
+        - "GroupC"
+      label_order: null
       palettes:
-        label_colors: null        # TODO: named vector for cell type axis colors in make_anatomical_dotplot
-                                  # referenced as label_colors in anatomical_de_analysis.md but undefined
-    validated_outputs:
-      - "IntegratePublicData pipeline: multi-source harmonized UMAP (BoneMarrowStroma run)"
-      - "Cohort plots: correlation heatmap + chord + proportion (validated BoneMarrowStroma run)"
-      - "Anatomical DE analysis: site comparisons (Vertebrae/IliacCrest/FemoralHead)"
-      # TODO: confirm which specific figures from anatomical_de_analysis.md were validated
-    last_validated: null  # TODO: confirm date
-    notes: |
-      Source datasets: Leimkuler (Vertebrae), Wang (Iliac Crest), Li (FemoralHead).
-      Dataset names referenced in v1: Vertebrae, IliacCrest, FemoralHead, Li, Wang.
-      FemoralHead RDS uses non-standard UMAP reduction name "UMAP_dim30" — see seurat_v5_rules Rule 5.
-      anatomical_de_analysis.md in v1 was an orphan (not wired into pipeline.md).
-      STROMA_ORDER referenced in v1 but never defined — must be established before running
-      make_anatomical_dotplot (Phase 2 module).
-      Broad label for low-confidence label transfer: "Mesenchymal".
-      Special labels: CD14/PE sort strategy labels, "Passaged Stroma", "Adipo-like MSC" suffix.
-      BoneMarrowStroma was previously in primary_tissues but was commented out in v1 lab_context.md.
+        label_colors: null
+    validated_outputs: []  # see project records
+    last_validated: null
+    notes: null  # per-project context lives in that project's private CLAUDE.md, not in this registry
 
-  CoCulture:
+  ExampleProject_E:
     status: completed
     pipeline: LargeDataset
     inputs:
-      type: null     # TODO: confirm input format (likely h5 or RDS)
+      type: null
       paths:
-        - null       # TODO: fill in actual data paths
+        - "<YOUR_INPUT_PATHS>"
     context_defaults:
-      batch_correction_var: null    # TODO: confirm batch variable for this project
-      label_col: null               # TODO: confirm cell type label column
-      palettes: null                # TODO: no established palette in library
-    validated_outputs:
-      - "Custom FeaturePlot implementation (feature_umap_plot.md validated on CoCulture run)"
-      # TODO: confirm additional validated outputs
-    last_validated: null  # TODO: confirm date
-    notes: |
-      CoCulture is the validation project for feature_umap_plot.md (custom FeaturePlot recipe).
-      This project documents 7 specific ggplot gotchas for reproducing Seurat FeaturePlot behavior:
-      AutoPointSize formula, oob=squish, gradientn vs gradient, q95 limit compression, etc.
-      TODO: Gather more context about this project's biology and analysis goals.
+      batch_correction_var: null
+      label_col: null
+      palettes: null
+    validated_outputs: []  # see project records
+    last_validated: null
+    notes: null  # per-project context lives in that project's private CLAUDE.md, not in this registry
 
-  TabulaSapiensComparison:
+  ExampleProject_F:
     status: completed
     pipeline: IntegratePublicData
     inputs:
-      type: null     # TODO: confirm input format for Tabula Sapiens download
+      type: null
       paths:
-        - null       # TODO: fill in TS download path and WCM in-house path
+        - "<YOUR_INPUT_PATHS>"
     context_defaults:
       batch_correction_var: sample_id
-      source_col: dataset           # metadata column identifying dataset source
-      inhouse_label: "WCM"          # in-house data label
-      atlas_label: "TS"             # Tabula Sapiens label
-      subtype_col: null             # TODO: confirm EC subtype column name
-      n_per_subtype: 1500           # validated downsampling rate for co-UMAP
+      source_col: dataset
+      inhouse_label: "<YOUR_INHOUSE_LABEL>"
+      atlas_label: "<YOUR_ATLAS_LABEL>"
+      subtype_col: null
+      n_per_subtype: 1500
       palettes:
-        ec_subtype_colors: null     # TODO: carries HumanFat ec_subtype_colors — confirm if same
-    validated_outputs:
-      - "Pre-UMAP downsampling + 4-panel co-embedding UMAP (WCM vs Tabula Sapiens)"
-      - "Cross-atlas centroid correlation heatmap in Harmony space"
-      - "Depth-corrected 3-section dotplot (within-dataset z-scoring)"
-      - "TF diamond variant of cross-atlas dotplot"
-    last_validated: null  # TODO: confirm date
-    notes: |
-      Comparison of WCM in-house EC subtypes against Tabula Sapiens public atlas.
-      1500 cells/subtype downsampling was validated as maintaining WCM subtype representation
-      while allowing Tabula Sapiens to dominate UMAP geometry (80-85% of cells).
-      Custom fonts ("Source Sans 3", "Playfair Display") are NOT available in r-env —
-      any generated scripts must default to system fonts (confirmed bug in v1 cross_atlas_dotplot.md).
-      Uses cairo_pdf for patchwork-based multi-panel PDFs (not standard pdf()).
-      STROMA_ORDER equivalent: EC_SUBTYPES vector (WCM subtypes ordered for cross-atlas dotplot).
-      TODO: Fill in actual file paths and dataset accession info.
+        ec_subtype_colors: null
+    validated_outputs: []  # see project records
+    last_validated: null
+    notes: null  # per-project context lives in that project's private CLAUDE.md, not in this registry
