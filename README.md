@@ -2,23 +2,25 @@
 
 **Status:** v0.1 — Initial scRNA-Seq Pipeline framework. Provisional.
 
-A library of [Claude Code](https://docs.claude.com/claude-code) "skills" for
-running single-cell RNA-seq analyses via natural-language prompts. Structured
-as a layered hierarchy of primitives, modules, and pipelines that Claude Code
-composes when it runs an analysis.
+A library of [Claude Code](https://docs.claude.com/claude-code) "skills" 
+(natural-language instructions and R code) for running single-cell  RNA-seq analyses 
+via natural-language prompts. Structured as a layered hierarchy of primitives, modules, 
+and pipelines that Claude Code composes when it runs an analysis.
 
-This is a **framework, not a finished product.** It reflects one working
-approach to Claude-driven bioinformatics — published in the hope that others
-find the structure useful as a starting point for their own skill libraries.
+This is a **framework in development.** It reflects one working
+approach to Claude-driven bioinformatics — others should find it helpful
+as a starting point for structuring their own skill libraries.
 
 ## What this is
 
 If you've used Claude on the web or in an IDE, you've prompted Claude directly
 for individual answers. This library is a different pattern: a set of
 markdown-based **skills** — reusable, documented analysis units — that
-Claude Code loads on demand and composes into full pipelines. You write a
-short brief describing what you want; Claude Code reads the relevant skills
-and produces a complete analysis.
+Claude Code loads on demand and composes into full pipelines. Some units have
+code blocks written that the coding agent can customize for individual use cases, some
+have natural-language instructions to guide the coding agent workflow. Your role
+is to write a short brief describing the analysis or output you want; Claude Code reads 
+the relevant skills and produces a complete and high-quality analysis and figure generation.
 
 The library is organized in three layers:
 
@@ -51,7 +53,7 @@ internal library. Expect:
 - Documentation gaps in places
 - Ongoing evolution — this is not a stable API
 
-See `STATUS.md` for a per-directory maturity map.
+See `STATUS.md` for a per-directory map of development status.
 
 ## Prerequisites
 
