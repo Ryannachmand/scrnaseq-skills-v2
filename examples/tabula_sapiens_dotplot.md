@@ -22,11 +22,11 @@ atlas: "Tabula Sapiens"             # Known-Atlas Convention; auto-populates sou
 downstream_analyses:
   cross_dataset_dotplot:
     enabled: true
-    source_col: "dataset"           # metadata column identifying WCM vs TS
+    source_col: "dataset"           # metadata column identifying inhouse vs TS
     subtype_col: "cell_subtype"     # cell subtype column
                                     # TODO: confirm exact column name
     sources_order:
-      - "WCM"                       # in-house dataset (first column group)
+      - "inhouse"                    # in-house dataset (first column group)
       - "TS"                        # Tabula Sapiens (second column group)
     col_group_col: "dataset"        # column used for column grouping (same as source_col here)
     marker_genes:
@@ -61,7 +61,7 @@ downstream_analyses:
       - "<GENE_A>"  # REPLACE: gene confirmed in in-house data but below atlas detection threshold
       - "<GENE_B>"
     group_colors:
-      "WCM": "#FFF8E1"          # warm yellow background for in-house WCM column group
+      "inhouse": "#FFF8E1"      # warm yellow background for in-house column group
       "TS":  "#FFEBEE"          # light red background for primary TS atlas column group
 ```
 
@@ -92,9 +92,9 @@ The v1 used the following column naming pattern for the dotplot x-axis:
 ## Validation notes
 
 - Illustrative example of the cross-dataset dotplot pattern
-- Three-section dotplot: shared markers / WCM-specific / TS-specific
+- Three-section dotplot: shared markers / inhouse-specific / TS-specific
 - TF diamond variant was also run (Part C); uses `shape = 23` patch on the dotplot
-- Depth correction: within-dataset z-scoring applied separately to WCM and TS
+- Depth correction: within-dataset z-scoring applied separately to inhouse and TS
   (each dataset z-scored independently per gene before combining)
 - Output dir: `output2/` (not `output/`)
 
@@ -109,5 +109,5 @@ The v1 used the following column naming pattern for the dotplot x-axis:
 - Column whitespace→dot conversion: if loading `cor_mat` from a CSV round-trip, apply
   `gsub("\\.", " ", colnames(cor_mat))` to restore spaces in column names
 - `cairo_pdf` required for patchwork outputs (same issue as co_umap — `useDingbats = FALSE` omitted)
-- `SOURCES_ORDER = c("WCM", "TS")` — WCM first ensures in-house columns appear on the left;
+- `SOURCES_ORDER = c("inhouse", "TS")` — inhouse first ensures in-house columns appear on the left;
   this is the conventional display order for "our data vs atlas" comparisons

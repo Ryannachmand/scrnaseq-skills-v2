@@ -157,7 +157,7 @@ shared module or pipeline file. Always reference palettes via context injection.
 
 ## Cross-Dataset Comparison Conventions
 
-When comparing in-house (WCM) data against a public atlas (e.g. Tabula Sapiens):
+When comparing in-house data against a public atlas (e.g. Tabula Sapiens):
 
 ### Column ordering in cross-dataset dotplots
 
@@ -166,7 +166,7 @@ When comparing in-house (WCM) data against a public atlas (e.g. Tabula Sapiens):
 Implement by setting SOURCES_ORDER in @modules/cross_dataset_dotplot.md:
   SOURCES_ORDER <- c("inhouse_label", "atlas_label")
 
-The in-house label (e.g. "WCM", "inhouse_data") must be the first element.
+The in-house label (e.g. "inhouse") must be the first element.
 This rule applies regardless of cell count -- do not let the atlas dominate column
 order simply because it has more cells.
 

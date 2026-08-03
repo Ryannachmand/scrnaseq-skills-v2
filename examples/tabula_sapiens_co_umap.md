@@ -26,8 +26,8 @@ atlas: "Tabula Sapiens"             # Known-Atlas Convention — auto-populates 
 downstream_analyses:
   atlas_co_umap:
     enabled: true
-    source_col: "dataset"           # metadata column identifying dataset source (WCM vs TS)
-    inhouse_label: "WCM"            # in-house data label in source_col
+    source_col: "dataset"           # metadata column identifying dataset source (inhouse vs TS)
+    inhouse_label: "inhouse"        # in-house data label in source_col
     atlas_label: "TS"               # Tabula Sapiens label in source_col
     subtype_col: "cell_subtype"     # cell subtype column (in-house data)
                                     # TODO: confirm exact column name in this project's object
@@ -35,7 +35,7 @@ downstream_analyses:
     highlight_inhouse: "CapEC"      # in-house subtype to highlight in comparison panels
     highlight_atlas: "<ATLAS_CELL_TYPE>"  # atlas cell group to highlight in comparison panels
     n_per_subtype: 1500             # validated downsampling rate
-                                    # rationale: see WCM/TS ratio analysis below
+                                    # rationale: see inhouse/TS ratio analysis below
     coords_csv: "output2/ts_harmony_umap_presample_coords.csv"
                                     # path to save/load UMAP coordinates CSV
 
@@ -80,7 +80,7 @@ Increasing DOWNSAMPLE_N above ~2500 risks in-house cells distorting atlas topolo
 # 06g_ts_umap_replot.R      — replot from saved coordinates with annotation panels
 
 # Validated figure dimensions:
-fig_w <- 21    # inches (4-panel layout: WCM only, TS only, co-UMAP, highlight panel)
+fig_w <- 21    # inches (4-panel layout: inhouse only, TS only, co-UMAP, highlight panel)
 fig_h <- 5.5   # inches
 # Output: ggsave(..., device = cairo_pdf, width = 21, height = 5.5, units = "in")
 # Note: cairo_pdf required for patchwork multi-panel PDFs (standard pdf() only renders
@@ -101,7 +101,7 @@ Explicit values in the `atlas_co_umap` config block take precedence over registr
 
 - Illustrative example of the cross-dataset UMAP pattern
 - Output dir: `output2/` (this project used output2/ — set OUTPUT_DIR accordingly)
-- 4-panel co-UMAP output: WCM cells only, TS cells only, co-embedding, highlight comparison
+- 4-panel co-UMAP output: inhouse cells only, TS cells only, co-embedding, highlight comparison
 
 ## Known issues / quirks
 
