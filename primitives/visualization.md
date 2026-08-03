@@ -171,7 +171,7 @@ placement between groups of x values -- it does NOT control what the x-axis repr
 ## Canonical Dot Plot (`make_canonical_dotplot`)
 
 General-purpose dot plot with shape=21 (filled circle), size=pct_exp, fill=avg_exp_scaled.
-Replaces the v1 "EC Functional Dot Plot" — no EC-specific assumptions.
+General-purpose dot plot with no cell-type-specific assumptions.
 
 **Ordering rule (applied inside every dotplot function):** columns are sorted alphabetically
 (ascending, case-sensitive). Genes/rows are sorted diagonally: the gene peaking in the

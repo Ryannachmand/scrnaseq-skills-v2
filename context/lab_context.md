@@ -24,20 +24,17 @@ Primary tissues and cell types this lab routinely works with.
 
 ```yaml
 primary_tissues:
-  - Adipose (multi-depot: visceral fat, subcutaneous fat, orbital fat, lipoma, breast fat, myelolipoma)
-  - Kidney (glomerular + tubular vasculature, whole organ multi-region)
-  - Eye (posterior segment; multiple disease states)
+  # Replace with tissues relevant to your lab's work.
+  # These drive default marker selection and palette expectations.
+  - "<TISSUE_1>"    # e.g., a primary organ, tissue type, or disease context
+  - "<TISSUE_2>"
 
 cell_compartments_of_interest:
-  - Retinal Pigment Epithelium (RPE)
-  - Choroidal endothelial cells
-  - Choroidal stromal / fibroblasts
-  - Pericytes / Mural cells (choroidal)
-  - Macrophages / Microglia (choroidal immune)
-  - Endothelial cells (EC subtypes)
-  - Stromal cells / ASPCs / Fibroblasts
-  - Immune cells (Macrophages/MoMF, Monocytes, T cells, B cells, Mast cells, DCs, NK cells)
-  - Vascular smooth muscle cells (SMC)
+  # Replace with cell types routinely studied in your lab.
+  # These inform module defaults for subclustering, DE, and downstream analyses.
+  - "<CELL_TYPE_1>"
+  - "<CELL_TYPE_2>"
+  # Add as many entries as needed.
 ```
 
 ---
@@ -113,7 +110,7 @@ Before running Mode A autonomous annotation, drop clusters with fewer than 50 ce
 Clusters under 50 cells are likely noise or doublet aggregates. Annotating them adds
 spurious labels and inflates the subtype count. Log dropped clusters to decision_log.txt.
 
-Expected EC subtype count: 6-10 for a typical multi-sample dataset. If FindClusters
+Expected subtype count varies by cell type; typical range is 4-12 for a multi-sample dataset. If FindClusters
 returns > 12 clusters at the requested resolution, evaluate whether resolution should
 be lowered before proceeding with Mode A.
 
@@ -150,7 +147,7 @@ These are already specified in @modules/celltype_subclustering.md Mode A endpoin
 ## Aesthetics and Color Preferences
 
 Canonical palettes are defined in @context/color_palettes.md.
-Project-specific palettes (EC subtypes, tissue types, adipose depots) are in
+Project-specific palettes (cell subtypes, tissue types) are in
 each project's `context_defaults.palettes` block in validated_examples.yaml.
 
 The deployment agent should never hardcode project-specific color vectors in a
@@ -188,12 +185,11 @@ correction and destroys column ordering.
 
 ---
 
-## EC Biological Gene Categories
+## Functional Gene Categories
 
-Three lab-curated EC gene category reference lists. Use these whenever an
-analysis is organized by EC functional biology (e.g. cross-organ EC dotplots,
-EC subcluster dotplots split by Condition or Group, EC module scoring,
-pathway enrichment universes).
+These are example functional gene sets that can be referenced across the library.
+Used for: cross-context dotplots, subcluster dotplots split by Condition or Group,
+module scoring.
 
 These are REFERENCE UNIVERSES for filtering and scoring, NOT plot-ready panels.
 For plotting, apply the "Dotplot gene selection rule" below to subset to genes
@@ -205,7 +201,7 @@ these molecules are pleiotropic. Do not deduplicate across categories.
 If module scoring multiple categories together is desired, note that genes
 in multiple categories will contribute to each module's score.
 
-### Angiocrine Factors
+### Vascular Signaling Factors
 
 ```r
 angiocrine_factors <- c(
@@ -347,7 +343,7 @@ extracellular_matrix <- c(
 
 ## Dotplot Gene Selection Rule
 
-When generating a dotplot from any EC gene category (or any other large
+When generating a dotplot from any functional gene category (or any other large
 reference gene list), DO NOT plot the full reference list. Subset to genes
 showing statistical change along the plot's stratification axis.
 

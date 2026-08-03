@@ -92,7 +92,7 @@ known_atlases:
       available in r-env — generated scripts must use system fonts. Use cairo_pdf for
       patchwork-based multi-panel PDFs.
       DOWNSAMPLE_N formula: target_n = floor(0.25 * n_atlas_cells / n_subtypes)
-      provides a starting estimate; 1500 was validated for the WCM-EC use case.
+      provides a starting estimate; 1500 was a validated value for a prior in-house use case.
       Adjust upward for atlases with fewer cells or in-house datasets with more subtypes.
       The atlas_group_col "cell_ontology_class" is coarse-grained — it maps to broad
       cell types (e.g., "endothelial cell of venule"), not subtypes. For cross_dataset_dotplot,

@@ -350,10 +350,10 @@ gene scoring.
 # Each name is a broad cell subtype; each vector is its canonical marker genes.
 # Example:
 #   broad_type_markers <- list(
-#     "Capillary"    = c("CA4", "PLVAP", "FCN3"),
-#     "ArterialEC"   = c("HEY1", "GJA5", "EFNB2"),
-#     "VenousEC"     = c("ACKR1", "NR2F2", "VWF"),
-#     "LymphaticEC"  = c("LYVE1", "PROX1", "PDPN")
+#     "T_cell"      = c("CD3D", "CD3E", "CD2"),
+#     "B_cell"      = c("CD19", "MS4A1", "CD79A"),
+#     "Myeloid"     = c("CD14", "LYZ", "FCGR3A"),
+#     "NK_cell"     = c("NKG7", "GNLY", "KLRD1")
 #   )
 broad_type_markers <- list(
   "project_specific" = c("project_specific")  # REPLACE from brief

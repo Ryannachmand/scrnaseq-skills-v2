@@ -56,7 +56,7 @@ Entry point for the deployment agent. Read this file first when generating any p
     ├── cellchat_example_A.md
     ├── cohort_plots_example_A.md
     ├── de_comprehensive_example_A.md
-    ├── ec_functional_gene_sets.md
+    ├── functional_gene_sets_example.md
     ├── load_formats_example_A.md
     ├── tabula_sapiens_co_umap.md
     ├── tabula_sapiens_dotplot.md

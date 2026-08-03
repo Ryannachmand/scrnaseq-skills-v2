@@ -7,7 +7,7 @@
 Single authoritative source for all non-project-specific color palettes.
 Reference this file rather than hardcoding color values in any primitive or module.
 
-**Project-specific palettes** (EC subtypes, adipose depot types, organ tissue types)
+**Project-specific palettes** (cell subtype palettes, tissue types)
 are in `context/validated_examples.yaml` under each project's `context_defaults.palettes` block.
 Do NOT define project-specific palettes here.
 

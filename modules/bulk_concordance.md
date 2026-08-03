@@ -512,7 +512,7 @@ make_bulk_scatter <- function(de_full, negate_invivo = FALSE, output_path) {
 **Conditional on `TARGET_TF` being non-null.**
 
 This section requires a caller-provided TF gene list appropriate to your cell type biology.
-For EC-biology TF lists (Lambert et al. 2018, Cell), see examples/. For immune, stromal,
+For cell-type-specific TF lists (Lambert et al. 2018, Cell), see examples/. For immune, stromal,
 or other contexts, provide a curated list for your biology in the project CLAUDE.md.
 
 ```r
@@ -522,7 +522,7 @@ TARGET_TF <- NULL   # REPLACE from brief: downstream_analyses.bulk_concordance.t
 if (!is.null(TARGET_TF)) {
 
 # ── TF list — caller-provided; biology-specific ───────────────────────────────
-# EC biology: ETS family, KLF/SP, SOX, FOX, nuclear receptors, AP-1, STAT, NF-kB, etc.
+# Vascular/endothelial-relevant TF families: ETS family, KLF/SP, SOX, FOX, nuclear receptors, AP-1, STAT, NF-kB, etc.
 # Immune: IRF, STAT, NF-kB, ETS
 # Fibroblast: AP-1, KLF, ZEB/SNAI
 # See examples/ for validated biology-specific TF lists

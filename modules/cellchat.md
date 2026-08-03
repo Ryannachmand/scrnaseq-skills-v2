@@ -2,7 +2,7 @@
 requires_context:
   palettes:
     - cell_colors        # required — named vector mapping every cell type in analysis to a hex color
-    - source_colors      # optional — subset of cell_colors for source cell types (EC subtypes);
+    - source_colors      # optional — subset of cell_colors for source cell types;
                          #   used for x-axis label coloring in bubble and bar plots;
                          #   auto-derived as cell_colors[source_types] if not provided separately
   metadata_columns:
@@ -595,7 +595,7 @@ PATHWAY_CATEGORIES <- list(
 
 # Cell type vectors
 CT_ORDER     <- "project_specific"  # REPLACE: ordered character vector of all cell type names
-SOURCE_TYPES <- "project_specific"  # REPLACE: cell types used as sources (e.g., EC subtypes)
+SOURCE_TYPES <- "project_specific"  # REPLACE: cell types used as sources
 TARGET_TYPES <- "project_specific"  # REPLACE: cell types used as targets
 
 # Color vectors (must cover all cell types in CT_ORDER)

@@ -41,7 +41,7 @@ projects:
     context_defaults:
       batch_correction_var: source_file
       label_col_whole_object: celltype
-      label_col_ec_subset: mylabel
+      label_col_subset: mylabel
       sample_col: source_file
       group_col: tissue_type
       active_assay: RNA
@@ -77,7 +77,7 @@ projects:
           "KeyE": "#8B4513"
           "KeyF": "#FFB6C1"
           "KeyG": "#20B2AA"
-        ec_subtype_colors:
+        subtype_colors:
           "AEC":    "#REPLACE_HEX"
           "CapEC":  "#REPLACE_HEX"
           "CapEC2": "#REPLACE_HEX"
@@ -99,7 +99,7 @@ projects:
     context_defaults:
       batch_correction_var: sample
       label_col_whole_object: celltype
-      label_col_ec_subset: ec_subtype_final
+      label_col_subset: ec_subtype_final
       sample_col: sample
       group_col: null
       active_assay_visualization: SCT
@@ -108,7 +108,7 @@ projects:
       annotation_approach: refine_existing
       umap: pre-computed
       palettes:
-        ec_subtype_colors:
+        subtype_colors:
           "EC-GC":    "#REPLACE_HEX"
           "EC-AEA":   "#REPLACE_HEX"
           "EC-AVR":   "#REPLACE_HEX"
@@ -193,7 +193,7 @@ projects:
       subtype_col: null
       n_per_subtype: 1500
       palettes:
-        ec_subtype_colors: null
+        subtype_colors: null
     validated_outputs: []  # see project records
     last_validated: null
     notes: null  # per-project context lives in that project's private CLAUDE.md, not in this registry

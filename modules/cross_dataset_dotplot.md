@@ -387,7 +387,7 @@ Same structure as Part B but:
 
 ```r
 # TF list — caller-provided, biology-specific
-# For EC biology: Lambert et al. 2018 ETS/KLF/SOX/FOX list; see examples/
+# For vascular biology: Lambert et al. 2018 ETS/KLF/SOX/FOX list; see examples/
 # For other cell types: provide curated TF list appropriate to the biology
 human_tfs <- c("project_specific")   # REPLACE: curated TF list
 

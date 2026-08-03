@@ -54,7 +54,7 @@ or whose `pipeline_chain` includes IntegratePublicData, inject the following blo
   before writing Step 2 of Stage 8. Key conventions:
   - SOURCES_ORDER: in-house source first (left), atlas source second (right)
   - Depth correction: within-dataset z-scoring per module Part B
-  - Marker sections: use @context/lab_context.md EC biological gene categories
+  - Marker sections: use @context/lab_context.md functional gene categories
   - Column label convention: "{source} {subtype}" for in-house, organ name for atlas
 
 Detect the IntegratePublicData pipeline in pipeline_chain and auto-inject this block.

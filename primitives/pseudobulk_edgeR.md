@@ -9,7 +9,7 @@ requires_context:
       - sample_col    # column in DGEList$samples identifying pseudobulk samples
       - group_col     # column in DGEList$samples holding the comparison group variable
     optional:
-      - subtype_col   # column in DGEList$samples for EC subtype / cell type (for per-subtype loops)
+      - subtype_col   # column in DGEList$samples for cell subtype (for per-subtype loops)
   brief_keys:
     required:
       - output_dir
@@ -30,7 +30,7 @@ model fitting, contrasts, and FDR-controlled output.
 comparison group. Produces p-values and FDR with the usual glmQLFit interpretation.
 
 **Design-unreplicated tier (descriptive-only):** for n=1 sort designs (e.g. single
-EC-sort library per age × timepoint), biological replication is absent. Results are
+sorted-cell library per age × timepoint), biological replication is absent. Results are
 logFC estimates and tagwise dispersions only — no valid p-values. All outputs must be
 labeled `[DESCRIPTIVE — no replication; p-values unreliable]`.
 
@@ -65,7 +65,7 @@ dir.create(OUTPUT_DIR, recursive = TRUE, showWarnings = FALSE)
 # ── Design ────────────────────────────────────────────────────────────────────
 SAMPLE_COL  <- "project_specific"   # REPLACE: column in dgl$samples (e.g. "library")
 GROUP_COL   <- "project_specific"   # REPLACE: column in dgl$samples (e.g. "irradiated_day")
-SUBTYPE_COL <- "project_specific"   # REPLACE: EC subtype column (e.g. "cell_type_subset"), or NULL for whole
+SUBTYPE_COL <- "project_specific"   # REPLACE: cell subtype column (e.g. "cell_type_subset"), or NULL for whole
 DESIGN_FORMULA <- NULL              # NULL = "~ 0 + GROUP_COL"; set formula string to override
 
 # ── Contrasts ─────────────────────────────────────────────────────────────────
@@ -301,7 +301,7 @@ make_edger_volcano <- function(results, comp_label, subset_name,
 ## Per-Subtype Loop Pattern
 
 ```r
-# When SUBTYPE_COL is defined: loop over EC subtypes, subsetting dgl_filt each time.
+# When SUBTYPE_COL is defined: loop over subtypes, subsetting dgl_filt each time.
 # When NULL: run on all pseudobulk samples together.
 
 subtypes_to_run <- if (!is.null(SUBTYPE_COL) && SUBTYPE_COL %in% colnames(dgl_filt$samples)) {
@@ -395,7 +395,7 @@ downstream_analyses:
     dgelist_path: project_specific       # path to pre-built DGEList RDS
     sample_col: project_specific         # column in DGEList$samples identifying samples
     group_col: project_specific          # grouping column for contrasts
-    subtype_col: project_specific        # optional: EC subtype column (null = whole-object)
+    subtype_col: project_specific        # optional: cell subtype column (null = whole-object)
     replicated_design: true              # FALSE for n=1-per-group designs (descriptive only)
     design_formula: null                 # null = "~ 0 + group_col"
     fdr_cut: 0.05

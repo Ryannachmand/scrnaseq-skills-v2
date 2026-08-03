@@ -29,11 +29,11 @@ downstream_analyses:
     source_col: "dataset"           # metadata column identifying dataset source (WCM vs TS)
     inhouse_label: "WCM"            # in-house data label in source_col
     atlas_label: "TS"               # Tabula Sapiens label in source_col
-    subtype_col: "ec_subtype"       # EC subtype column (in-house data)
+    subtype_col: "cell_subtype"     # cell subtype column (in-house data)
                                     # TODO: confirm exact column name in this project's object
     atlas_group_col: "cell_ontology_class"   # TS cell type column
     highlight_inhouse: "CapEC"      # in-house subtype to highlight in comparison panels
-    highlight_atlas: "Fat EC"       # atlas cell group to highlight in comparison panels
+    highlight_atlas: "<ATLAS_CELL_TYPE>"  # atlas cell group to highlight in comparison panels
     n_per_subtype: 1500             # validated downsampling rate
                                     # rationale: see WCM/TS ratio analysis below
     coords_csv: "output2/ts_harmony_umap_presample_coords.csv"
@@ -55,7 +55,7 @@ context_overrides:
 ```
 Dataset composition before downsampling:
   In-house: N in-house cells, K subtypes
-  Atlas: ~100,000 EC cells (various organ ECs)
+  Atlas: ~N cells across multiple tissues
 
 After downsampling at n_per_subtype = 1500:
   in-house contribution: n_per_subtype × K subtypes = ~M cells

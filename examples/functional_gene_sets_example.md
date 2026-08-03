@@ -1,21 +1,20 @@
 ---
-# Example: EC Functional Gene Sets (Canonical Reference)
+# Example: Functional Gene Sets (Reference)
 # Status: full-build
-# Validated: Multiple EC-focused projects
 ---
 
-# Example: EC Functional Gene Sets (Canonical Reference)
+# Example: Functional Gene Sets (Reference)
 
-This is the canonical EC biology `functional_gene_sets` reference for use in
+This is an example `functional_gene_sets` reference for use in
 `@modules/multi_group_de_analysis.md` and `@modules/de_comprehensive_csv.md`.
 
 The four named categories below were hardcoded in the v1
 `differential_expression.md` and removed in Phase 1 (F4 fix) to decouple
 biology-specific gene sets from the primitive. They are documented here as the
-authoritative source for EC functional annotations.
+authoritative source for functional annotations.
 
-**Attribution:** Validated across multiple EC-focused DE runs (adipose and kidney projects).
-Gene list organization reflects EC-biology consensus from published literature
+**Attribution:**
+Gene list organization reflects biological pathway consensus from published literature
 (Aird 2007, Goveia 2019, Potente & Carmeliet 2017).
 
 ---
@@ -59,7 +58,7 @@ downstream_analyses:
         - CD47
         - CD99
         - CD93
-      Signaling_Angiocrine:
+      Signaling_Receptors_Ligands:
         - VEGFA
         - VEGFB
         - VEGFC
@@ -213,10 +212,10 @@ downstream_analyses:
 
 | Category | Biological function | Typical use |
 |---|---|---|
-| Adhesion_Immune_Trafficking | Leukocyte adhesion, junctional proteins, chemokine expression | Inflammation response; EC activation state |
-| Signaling_Angiocrine | Paracrine niche signals; growth factors, Notch/Wnt/BMP/VEGF | Tissue support function; identity in specialized niches |
+| Adhesion_Immune_Trafficking | Leukocyte adhesion, junctional proteins, chemokine expression | Inflammation response; cell activation state |
+| Signaling_Receptors_Ligands | Paracrine niche signals; growth factors, Notch/Wnt/BMP/VEGF | Tissue support function; identity in specialized niches |
 | Extracellular_Matrix | Basement membrane, fibrillar collagens, matrix remodeling | Structural identity; tissue-specific ECM niche |
-| Metabolic_Specialized | Glycolysis, OXPHOS, lipid metabolism, redox balance, autophagy | Metabolic state; relevant in adipose, liver, muscle ECs |
+| Metabolic_Specialized | Glycolysis, OXPHOS, lipid metabolism, redox balance, autophagy | Metabolic state; relevant in vascularized tissues |
 
 ---
 
@@ -230,7 +229,7 @@ The module runs `make_functional_dotplot()` and `make_functional_heatmap()` from
 # Minimal example — use all four categories:
 downstream_analyses:
   multi_group_de:
-    functional_gene_sets: !include ec_functional_gene_sets    # conceptual shorthand
+    functional_gene_sets: !include functional_gene_sets_example    # conceptual shorthand
     # In practice: copy the four categories from this file into the brief directly
 ```
 

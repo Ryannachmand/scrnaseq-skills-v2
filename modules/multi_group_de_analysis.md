@@ -178,7 +178,7 @@ cell_subsets <- list(
 
 # ── Functional gene sets — caller-provided, biology-specific ──────────────────
 # Required for make_functional_dotplot and make_functional_heatmap.
-# If not defined, those steps are skipped. EC biology sets belong in examples/.
+# If not defined, those steps are skipped. Biology-specific gene sets belong in examples/.
 functional_gene_sets <- list(
   "Pathway A" = c("project_specific"),  # REPLACE: gene vectors for your biology
   "Pathway B" = c("project_specific")

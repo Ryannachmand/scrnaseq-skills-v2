@@ -44,7 +44,7 @@ filtering: null
 # filtering:
 #   target_markers:
 #     positive: null       # dict: dataset_name → list of positive marker genes
-#                          # e.g. {in_house: ["PECAM1", "CDH5"], public_1: ["VWF"]}
+#                          # e.g. {in_house: ["<MARKER_1>", "<MARKER_2>"], public_1: ["<MARKER_3>"]}
 #     negative: null       # dict: dataset_name → list of genes to exclude cells expressing
 #   threshold_method: "module_score"   # module_score | label_transfer
 #   reference_object: null             # path to reference RDS for label-transfer-based filter
@@ -60,7 +60,7 @@ label_harmonization:
   score_low: 0.40           # label transfer: fall back to broad_label below this
   broad_label: "project_specific"  # label assigned to low-confidence transfers
   known_mappings: {}        # dict: source_label → unified_label
-                            # e.g. {"EC": "Endothelial", "Endothel": "Endothelial"}
+                            # e.g. {"<source_label>": "<unified_label>", "<alt_source_label>": "<unified_label>"}
                             # labels absent from this dict are flagged REVIEW at CP3
 
 # ── STAGE 4 — Downsampling (optional) ────────────────────────────────────────

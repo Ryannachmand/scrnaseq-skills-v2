@@ -105,8 +105,7 @@ CAT_COLORS <- c(
 
 ## Validation notes
 
-- Example validated on an EC subset object (senders = EC subtypes, receivers = all cell types
-  in the tissue)
+- Example validated on a single-cell-type subset object (one cell type as senders, all cell types as receivers)
 - Script 6: two-group comparison using the tissue_type column (TissueTypeA vs TissueTypeB)
 - Script 5 circos: 4 standard plots; two CellChat inference objects may be required if a
   sub-population needs separate treatment

@@ -104,7 +104,7 @@ LABEL_COL <- "project_specific"   # REPLACE: metadata column holding cell type l
 # ── Functional gene sets ─────────────────────────────────────────────────────
 # functional_gene_sets is a brief-supplied named list of gene vectors.
 # It is NOT defined here — the caller must provide it.
-# EC-specific gene sets belong in examples/, not this primitive.
+# Biology-specific gene sets belong in examples/, not this primitive.
 # Example structure:
 #   functional_gene_sets <- list(
 #     "Section A" = c("GENE1", "GENE2", ...),   # project_specific
@@ -954,7 +954,7 @@ cytokine|integrin|hypoxia").
 ## make_module_score_violin — per-subcluster module score violin
 
 Canonical recipe for AddModuleScore visualization. Use this when showing
-module score distributions across cell subtypes (e.g. EC subclusters)
+module score distributions across cell subtypes (e.g. subtype clusters)
 with comparison between conditions or groups.
 
 CRITICAL: x-axis is the subtype/subcluster column, fill is the comparison

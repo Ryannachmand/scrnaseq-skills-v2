@@ -23,7 +23,7 @@ downstream_analyses:
   cross_dataset_dotplot:
     enabled: true
     source_col: "dataset"           # metadata column identifying WCM vs TS
-    subtype_col: "ec_subtype"       # EC subtype column
+    subtype_col: "cell_subtype"     # cell subtype column
                                     # TODO: confirm exact column name
     sources_order:
       - "WCM"                       # in-house dataset (first column group)
@@ -31,8 +31,8 @@ downstream_analyses:
     col_group_col: "dataset"        # column used for column grouping (same as source_col here)
     marker_genes:
       # Three-section structure:
-      # Section 1: shared EC markers (present in both WCM and TS)
-      # Section 2: WCM-specific markers (in-house EC biology not represented in TS)
+      # Section 1: shared markers (present in both in-house and atlas datasets)
+      # Section 2: in-house-specific markers (not represented in the atlas)
       # Section 3: TS-specific markers (atlas markers below in-house detection threshold)
       # REPLACE: fill in gene lists from your own project data
       Section_1_Shared:
@@ -51,7 +51,7 @@ downstream_analyses:
         - "<GENE_2>"
         - "<GENE_3>"
       Section_3_TS_Specific:
-        - ACE2               # kidney EC marker in TS
+        - ACE2               # example marker
         # TODO: add TS-specific markers from project records
     sec1_force:
       # TFs present in in-house data but below atlas detection threshold due to sequencing depth.
@@ -71,7 +71,7 @@ The v1 used the following column naming pattern for the dotplot x-axis:
 
 ```r
 # In-house columns: "{inhouse_label} {subtype}"
-# e.g., "WCM CapEC", "WCM VenEC1", "WCM AEC"
+# e.g., "<source_label> <subtype_label>"
 # 
 # Atlas columns: "{organ_tissue} EC" (toTitleCase)
 # e.g., "Fat EC", "Kidney EC", "Liver EC"

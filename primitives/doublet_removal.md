@@ -125,7 +125,7 @@ the per-cell sample_id metadata column populated.
 **Cell-type subclustering:** Call on the cell-type subset immediately after
 subsetting and before NormalizeData. The subset retains raw counts and must have
 the per-cell sample_col populated. This second pass catches doublets that are only
-detectable within a single cell-type context (e.g. EC+EC from distinct functional
+detectable within a single cell-type context (e.g. same-cell-type doublets from distinct functional
 states that were masked in whole-object space).
 
 ## DO NOT call this in IntegratePublicData
